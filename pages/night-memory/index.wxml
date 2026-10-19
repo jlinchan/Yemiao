@@ -1,0 +1,11 @@
+<view class="nm-page">
+  <view class="ns-top" style="{{nav.topbarStyle}}"><button class="ns-back" hover-class="is-pressed" bindtap="goBack" aria-label="返回设置"><image src="/assets/agent/icons/arrow-left-muted.png"/></button><text>夜喵的记忆</text></view>
+  <scroll-view class="nm-scroll" scroll-y>
+    <view class="nm-content">
+      <view class="nm-card"><text class="nm-text" user-select>{{content}}</text></view>
+      <view wx:if="{{empty}}" class="nm-empty"><text>夜喵还没有记住什么。</text></view>
+      <button class="nm-clear" bindtap="clearMemory" hover-class="is-pressed">清除聊天记忆</button>
+      <view class="nm-safe-bottom"></view>
+    </view>
+  </scroll-view>
+</view>

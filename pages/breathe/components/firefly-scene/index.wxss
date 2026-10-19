@@ -1,0 +1,131 @@
+:host {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.firefly-scene {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  background: #141b3d;
+  pointer-events: none;
+}
+
+.firefly-sky {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.firefly-cluster-haze {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 49%;
+  width: 176rpx;
+  height: 176rpx;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.42);
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 231, 160, 0.5) 0%, rgba(255, 196, 74, 0.22) 38%, rgba(255, 183, 55, 0) 72%);
+  filter: blur(10rpx);
+  transition: transform var(--gather-duration) cubic-bezier(.22,.61,.36,1), opacity var(--gather-duration) ease;
+  will-change: transform, opacity;
+}
+
+.firefly-field {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.firefly-anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition-property: transform;
+  transition-duration: var(--scatter-duration);
+  transition-timing-function: cubic-bezier(.37,0,.63,1);
+  will-change: transform;
+}
+
+.firefly-glow {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 1;
+  animation-name: fireflyDrift, fireflyBlink;
+  animation-timing-function: ease-in-out, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: alternate, alternate;
+  will-change: transform, opacity;
+}
+
+.firefly-core {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 49%;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffe9a8;
+  box-shadow:
+    0 0 26rpx #ffe9a8,
+    0 0 72rpx rgba(232, 190, 92, 0.55);
+  animation: fireflyCorePulse 3.6s ease-in-out infinite;
+}
+
+.firefly-scene--inhale .firefly-anchor,
+.firefly-scene--hold .firefly-anchor {
+  transform: var(--gather-transform);
+  transition-duration: var(--gather-duration);
+}
+
+.firefly-scene--inhale .firefly-cluster-haze,
+.firefly-scene--hold .firefly-cluster-haze {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.88;
+}
+
+.firefly-scene--exhale .firefly-cluster-haze,
+.firefly-scene--idle .firefly-cluster-haze {
+  transform: translate(-50%, -50%) scale(0.42);
+  opacity: 0;
+  transition-duration: var(--scatter-duration), 900ms;
+}
+
+@keyframes fireflyDrift {
+  0% { transform: translate3d(-8rpx, 6rpx, 0) scale(0.82); }
+  50% { transform: translate3d(12rpx, -10rpx, 0) scale(1.12); }
+  100% { transform: translate3d(20rpx, 8rpx, 0) scale(0.92); }
+}
+
+@keyframes fireflyBlink {
+  0%, 100% { opacity: var(--glow-min); }
+  50% { opacity: var(--glow-max); }
+}
+
+@keyframes fireflyCorePulse {
+  0%, 100% { opacity: 0.56; transform: translate(-50%, -50%) scale(0.8); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.22); }
+}

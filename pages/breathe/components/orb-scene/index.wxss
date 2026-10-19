@@ -1,0 +1,93 @@
+:host {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.orb-scene {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  background: #050b16;
+  pointer-events: none;
+}
+
+.orb-grid,
+.orb-vignette {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.orb-grid {
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(151, 196, 242, 0.052) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(151, 196, 242, 0.052) 1rpx, transparent 1rpx);
+  background-size: 72rpx 72rpx;
+  background-position: center center;
+  opacity: 0.72;
+}
+
+.orb-vignette {
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(42, 91, 144, 0.16), rgba(5, 11, 22, 0) 43%),
+    linear-gradient(180deg, rgba(5, 11, 22, 0.05), rgba(3, 7, 15, 0.82) 96%);
+}
+
+.orb-stage {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 45%;
+  width: 590rpx;
+  height: 590rpx;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orb-scale,
+.orb-rotor,
+.orb-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.orb-scale {
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.orb-rotor {
+  animation-name: orbRotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.orb-image {
+  pointer-events: none;
+}
+
+@keyframes orbRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,19 @@
+<view
+  class="firefly-scene firefly-scene--{{scenePhase}} {{running ? 'is-running' : 'is-idle'}}"
+  style="{{timingStyle}}"
+  aria-hidden="true"
+>
+  <image class="firefly-sky" src="/pages/breathe/assets/breath-firefly/sky-bg.jpg" mode="aspectFill"></image>
+  <view class="firefly-cluster-haze"></view>
+  <view class="firefly-field">
+    <view
+      wx:for="{{fireflies}}"
+      wx:key="id"
+      class="firefly-anchor"
+      style="{{item.anchorStyle}}"
+    >
+      <view class="firefly-glow" style="{{item.glowStyle}}"></view>
+    </view>
+  </view>
+  <view class="firefly-core"></view>
+</view>

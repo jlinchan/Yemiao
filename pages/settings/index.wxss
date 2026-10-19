@@ -1,0 +1,13 @@
+.settings-page { min-height: 100vh; }
+.topbar-label { color: var(--text-soft); font-size: 24rpx; letter-spacing: 2rpx; }
+.topbar-spacer { width: 80rpx; }
+.settings-content { padding: 54rpx 48rpx; }
+.settings-group { margin-top: 54rpx; border-top: 1rpx solid var(--line); }
+.settings-group .setting-row { min-height: 112rpx; }
+.settings-sound { margin-top: 48rpx; }
+.settings-content { height: calc(100vh - 112rpx); overflow-y: auto; padding-bottom: calc(env(safe-area-inset-bottom) + 56rpx); }
+.privacy-section { margin-top: 56rpx; padding-top: 30rpx; border-top: 1rpx solid var(--line); }
+.privacy-title, .privacy-copy { display: block; }
+.privacy-title { font-size: 28rpx; }
+.privacy-copy { margin: 16rpx 0 30rpx; color: var(--text-faint); font-size: 23rpx; line-height: 1.8; }
+.privacy-section .text-button { width: 100%; margin-top: 8rpx; }

@@ -1,0 +1,198 @@
+{
+  "checks": [
+    {
+      "width": 320,
+      "overflow": false,
+      "assets": true,
+      "buttons": [
+        {
+          "label": "考试焦虑",
+          "width": 142.953125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "论文 / 科研压力",
+          "width": 142.953125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "宿舍难以放松",
+          "width": 142.953125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "脑子停不下来",
+          "width": 142.953125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "开始引导",
+          "width": 80.125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "和夜喵说说今晚的心情…",
+          "width": 292.71875,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "夜喵",
+          "width": 99.84375,
+          "height": 46.078125,
+          "inside": true
+        },
+        {
+          "label": "呼吸世界",
+          "width": 99.84375,
+          "height": 46.078125,
+          "inside": true
+        },
+        {
+          "label": "记录",
+          "width": 99.84375,
+          "height": 46.078125,
+          "inside": true
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "overflow": false,
+      "assets": true,
+      "buttons": [
+        {
+          "label": "考试焦虑",
+          "width": 167.5,
+          "height": 48,
+          "inside": true
+        },
+        {
+          "label": "论文 / 科研压力",
+          "width": 167.5,
+          "height": 48,
+          "inside": true
+        },
+        {
+          "label": "宿舍难以放松",
+          "width": 167.5,
+          "height": 48,
+          "inside": true
+        },
+        {
+          "label": "脑子停不下来",
+          "width": 167.5,
+          "height": 48,
+          "inside": true
+        },
+        {
+          "label": "开始引导",
+          "width": 85,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "和夜喵说说今晚的心情…",
+          "width": 343,
+          "height": 48,
+          "inside": true
+        },
+        {
+          "label": "夜喵",
+          "width": 117,
+          "height": 54,
+          "inside": true
+        },
+        {
+          "label": "呼吸世界",
+          "width": 117,
+          "height": 54,
+          "inside": true
+        },
+        {
+          "label": "记录",
+          "width": 117,
+          "height": 54,
+          "inside": true
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "overflow": false,
+      "assets": true,
+      "buttons": [
+        {
+          "label": "考试焦虑",
+          "width": 192.0625,
+          "height": 55.03125,
+          "inside": true
+        },
+        {
+          "label": "论文 / 科研压力",
+          "width": 192.078125,
+          "height": 55.03125,
+          "inside": true
+        },
+        {
+          "label": "宿舍难以放松",
+          "width": 192.0625,
+          "height": 55.03125,
+          "inside": true
+        },
+        {
+          "label": "脑子停不下来",
+          "width": 192.078125,
+          "height": 55.03125,
+          "inside": true
+        },
+        {
+          "label": "开始引导",
+          "width": 90.578125,
+          "height": 44,
+          "inside": true
+        },
+        {
+          "label": "和夜喵说说今晚的心情…",
+          "width": 393.3125,
+          "height": 55.03125,
+          "inside": true
+        },
+        {
+          "label": "夜喵",
+          "width": 134.15625,
+          "height": 61.90625,
+          "inside": true
+        },
+        {
+          "label": "呼吸世界",
+          "width": 134.171875,
+          "height": 61.90625,
+          "inside": true
+        },
+        {
+          "label": "记录",
+          "width": 134.171875,
+          "height": 61.90625,
+          "inside": true
+        }
+      ]
+    }
+  ],
+  "keyboardCheck": {
+    "x": 0,
+    "y": 413,
+    "width": 375,
+    "height": 99
+  },
+  "route": {
+    "type": "navigateTo",
+    "url": "/pages/focus/index"
+  },
+  "errors": []
+}

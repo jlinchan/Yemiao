@@ -1,0 +1,49 @@
+<view class="page-shell guide-page">
+  <!-- 走完的引导：只留一句晚安 -->
+  <view wx:if="{{ended}}" class="guide-end">
+    <view class="guide-halo guide-halo--end"></view>
+    <image class="guide-end-icon" src="{{scriptIcon}}" mode="aspectFit" aria-hidden="true"/>
+    <text class="guide-end-title">晚安</text>
+    <text class="guide-end-copy">今晚的「{{title}}」走完了。把今天放在门口，明天再取。</text>
+    <button class="guide-end-button" bindtap="backToChat" hover-class="is-pressed">回到对话</button>
+  </view>
+
+  <block wx:else>
+    <view class="topbar guide-topbar" style="{{nav.topbarStyle}}">
+      <button class="icon-button icon-button--back" bindtap="endSession" hover-class="is-pressed" aria-label="结束引导，回到对话">
+        <image class="guide-back-icon" src="{{icons.back}}" mode="aspectFit"/>
+      </button>
+      <text class="topbar-label">{{title}}</text>
+    </view>
+
+    <view class="guide-stage" bindtap="onStageTap">
+      <view class="guide-halo {{paused ? 'is-paused' : ''}}"></view>
+      <view class="guide-stage-inner">
+        <text class="guide-count">{{index + 1}} / {{total}}</text>
+        <text class="guide-line {{fading ? 'is-fading' : ''}}">{{text}}</text>
+      </view>
+      <view class="guide-dots" aria-hidden="true">
+        <view
+          wx:for="{{dots}}"
+          wx:key="*this"
+          wx:for-index="dotIndex"
+          class="guide-dot {{dotIndex < index ? 'is-done' : (dotIndex === index ? 'is-now' : '')}}"
+        ></view>
+      </view>
+    </view>
+
+    <view class="guide-controls {{controlsVisible ? 'is-visible' : ''}}">
+      <text wx:if="{{paused}}" class="guide-pause-note">已暂停，想歇多久都可以</text>
+      <view class="guide-pill-row">
+        <button class="guide-pill" bindtap="togglePause" hover-class="is-pressed">
+          <image class="guide-pill-icon" src="{{icons.pause}}" mode="aspectFit" aria-hidden="true"/>
+          <text>{{paused ? '继续' : '暂停'}}</text>
+        </button>
+        <button class="guide-pill guide-pill--quiet" bindtap="endSession" hover-class="is-pressed">
+          <image class="guide-pill-icon" src="{{icons.close}}" mode="aspectFit" aria-hidden="true"/>
+          <text>结束</text>
+        </button>
+      </view>
+    </view>
+  </block>
+</view>

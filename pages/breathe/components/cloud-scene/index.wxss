@@ -1,0 +1,64 @@
+:host {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.cloud-scene,
+.cloud-backdrop,
+.cloud-shade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.cloud-scene {
+  overflow: hidden;
+  background: #06192b;
+  pointer-events: none;
+}
+
+.cloud-backdrop {
+  overflow: hidden;
+  background: linear-gradient(180deg, #041b31 0%, #0a3455 48%, #0b3854 100%);
+}
+
+.cloud {
+  position: absolute;
+  top: -2%;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 104%;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: 50% 48%;
+  will-change: transform, opacity;
+}
+
+.cloud--one {
+  opacity: 1;
+}
+
+.cloud-shade {
+  z-index: 6;
+}
+
+.cloud-shade--top {
+  background:
+    radial-gradient(circle at 50% 4%, rgba(5, 21, 40, 0.68) 0%, rgba(5, 21, 40, 0) 44%),
+    linear-gradient(180deg, rgba(1, 12, 24, 0.64) 0%, rgba(1, 12, 24, 0) 28%);
+}
+
+.cloud-shade--bottom {
+  background:
+    linear-gradient(180deg, rgba(2, 16, 30, 0) 55%, rgba(2, 14, 27, 0.4) 76%, rgba(1, 11, 22, 0.72) 100%),
+    radial-gradient(circle at 50% 82%, rgba(64, 146, 190, 0.12) 0%, rgba(3, 18, 33, 0) 42%);
+}

@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "night-tabbar": "/components/night-tabbar/index"
+  }
+}

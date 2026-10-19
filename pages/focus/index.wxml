@@ -1,0 +1,22 @@
+<view class="page-shell focus-page">
+  <view class="topbar focus-topbar" style="{{nav.topbarStyle}}">
+    <button class="focus-back" bindtap="goBack" hover-class="focus-back--pressed" aria-label="返回呼吸首页">
+      <view class="focus-back-icon" aria-hidden="true">
+        <view class="focus-back-line focus-back-line--upper"></view>
+        <view class="focus-back-line focus-back-line--lower"></view>
+        <view class="focus-back-line focus-back-line--stem"></view>
+      </view>
+    </button>
+    <text class="topbar-label">关灯</text>
+  </view>
+  <view class="focus-content">
+    <text class="page-title">准备结束今天的信息输入。</text>
+    <text class="page-copy">小程序不能替你修改系统设置，\n但可以陪你一步步把环境调安静。</text>
+    <view class="focus-steps">
+      <view wx:for="{{steps}}" wx:key="title" class="focus-step"><view class="focus-step__number">{{index + 1}}</view><view><text class="focus-step__title">{{item.title}}</text><text class="focus-step__detail">{{item.detail}}</text></view></view>
+    </view>
+    <text wx:if="{{message}}" class="focus-message">{{message}}</text>
+    <button wx:if="{{!started}}" class="primary-button" bindtap="startFocus">开始关灯</button>
+    <button wx:else class="primary-button" bindtap="returnToBreathe">回到呼吸空间</button>
+  </view>
+</view>

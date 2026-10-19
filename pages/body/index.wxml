@@ -1,0 +1,18 @@
+<view class="page-shell body-page">
+  <view class="topbar" style="{{nav.topbarStyle}}">
+    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回呼吸首页"><view class="back-arrow"></view></button>
+  </view>
+
+  <view class="body-intro">
+    <text class="page-title">身体里，哪里有点紧？</text>
+    <text class="page-copy">不用急着让它放松。\n只是先注意到它。</text>
+  </view>
+
+  <view class="body-scan-stage" bindtap="selectPoint" aria-label="点击身体选择关注位置">
+    <view class="body-figure">
+      <image class="body-silhouette" src="/assets/body-silhouette-v2.png" mode="aspectFit" aria-label="中性人体剪影"></image>
+      <view wx:if="{{selectedPoint}}" class="selected-point" style="left: {{selectedPoint.x}}%; top: {{selectedPoint.y}}%;"></view>
+    </view>
+  </view>
+
+</view>

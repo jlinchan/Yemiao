@@ -1,0 +1,43 @@
+<view class="page-shell part-page world-bg--{{settings.world}}">
+  <view class="topbar" style="{{nav.topbarStyle}}">
+    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回身体扫描"><view class="back-arrow"></view></button>
+  </view>
+
+  <view class="part-heading" style="top: {{nav.navigationBottom + 26}}px;">
+    <text class="page-title">把呼吸带到这里</text>
+    <text class="page-copy">这里现在是什么感觉？</text>
+  </view>
+
+  <view class="part-stage" catchtouchstart="holdStart" catchtouchend="holdEnd" catchtouchcancel="holdCancel">
+    <view class="part-ambient"></view>
+    <view class="part-figure">
+      <image class="part-body-silhouette" src="/assets/body-silhouette-v2.png" mode="aspectFit"></image>
+      <view class="part-target" style="left: {{selectedPoint.x}}%; top: {{selectedPoint.y}}%;"><view></view></view>
+    </view>
+  </view>
+
+  <view class="part-prompt">
+    <text class="part-main-prompt">{{prompt}}</text>
+    <text class="part-sub-prompt">{{subPrompt}}</text>
+    <text wx:if="{{showCare}}" class="care-message">{{careMessage}}</text>
+    <text wx:if="{{phase !== 'idle' && phase !== 'completed'}}" class="phase-count">{{countdown}} 秒</text>
+  </view>
+
+  <view class="part-stats safe-bottom">
+    <view class="part-cycle-dots"><view wx:for="{{[0,1,2,3,4,5]}}" wx:key="*this" class="cycle-dot {{index < cycles ? 'is-filled' : ''}}"></view></view>
+    <text>{{cycles}} 次呼吸 · {{elapsed}}</text>
+  </view>
+  <button wx:if="{{phase !== 'idle' && phase !== 'completed'}}" class="part-stop" bindtap="stopBreathing" aria-label="停止呼吸">停止</button>
+
+  <view class="completion-mask {{showCompletion ? 'is-visible' : ''}}">
+    <view class="completion-mist"></view>
+    <view class="completion-content">
+      <text class="completion-eyebrow">{{cycles}} 次呼吸 · {{elapsed}}</text>
+      <text class="completion-title">谢谢你，陪自己待了一会儿。</text>
+      <text class="completion-copy">不需要让感觉消失。\n它已经被你温柔地注意到了。</text>
+      <button class="primary-button" bindtap="changePart">换一个部位</button>
+      <button class="secondary-button" bindtap="continueScan">继续扫描</button>
+      <button class="text-button" bindtap="stopHere">先停在这里</button>
+    </view>
+  </view>
+</view>
