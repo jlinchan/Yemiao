@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/counselors/index",
+    "pages/skills/index",
+    "pages/book-detail/index",
+    "pages/skill-detail/index",
+    "pages/topic/index",
+    "pages/agent/index",
+    "pages/guide/index",
+    "pages/night-memory/index",
+    "pages/night-messages/index",
+    "pages/record/index",
+    "pages/night-settings/index",
+    "pages/body/index",
+    "pages/body/part",
+    "pages/settings/index",
+    "pages/focus/index",
+    "pages/sound/index",
+    "pages/journal/index",
+    "pages/sleep/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/breathe",
+      "name": "breathe-worlds",
+      "pages": [
+        "index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/home/index": {
+      "network": "all",
+      "packages": [
+        "breathe-worlds"
+      ]
+    }
+  },
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.7",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#061719",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}
