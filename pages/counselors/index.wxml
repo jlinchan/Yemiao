@@ -1,0 +1,50 @@
+<view class="counselors-page">
+  <scroll-view class="counselors-scroll" scroll-y>
+    <view class="directory-header" style="padding-top: {{nav.statusBarHeight}}px;">
+      <view class="garden-art" aria-hidden="true">
+        <image class="garden-image" src="{{assets.garden}}" mode="aspectFill"></image>
+        <view class="garden-fade"></view>
+      </view>
+      <view class="directory-heading" style="min-height: {{nav.navigationHeight}}px; padding-right: {{nav.rightInset}}px;">
+        <button class="directory-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed">
+          <image class="back-icon" src="{{assets.back}}" mode="aspectFit"></image>
+        </button>
+        <text class="directory-title">陪伴者</text>
+      </view>
+      <view class="directory-intro">
+        <text class="directory-subtitle">总有一个陪伴方式，适合此刻的你</text>
+      </view>
+      <view class="directory-categories" role="tablist" aria-label="咨询师分类">
+        <button class="category-pill {{category === item.id ? 'is-selected' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="selectCategory" role="tab" aria-selected="{{category === item.id}}" hover-class="is-pressed">{{item.label}}</button>
+      </view>
+    </view>
+    <view class="counselor-list">
+      <view class="counselor-card counselor-card--{{item.id}}" wx:for="{{counselors}}" wx:key="id">
+        <view class="counselor-portrait">
+          <image class="counselor-avatar" src="{{item.avatar}}" mode="aspectFill" aria-label="{{item.name}}插画"></image>
+        </view>
+        <view class="counselor-copy">
+          <view class="counselor-topline">
+            <text class="counselor-name">{{item.name}}</text>
+          </view>
+          <text class="counselor-desc">{{item.desc}}</text>
+          <text class="counselor-description">{{item.description}}</text>
+          <view class="counselor-bottom">
+            <view class="counselor-tags">
+              <text class="counselor-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+            </view>
+            <button class="consult-button" data-id="{{item.id}}" bindtap="choose" aria-label="咨询{{item.name}}" hover-class="is-pressed">
+              <text>开始对话</text>
+              <image class="consult-chevron" src="{{assets.chevron}}" mode="aspectFit"></image>
+            </button>
+          </view>
+        </view>
+      </view>
+      <view class="directory-empty" wx:if="{{!counselors.length}}">
+        <text class="empty-title">暂时没有找到合适的陪伴方式</text>
+        <text class="empty-description">试试其他分类。</text>
+        <button class="empty-reset" bindtap="resetFilters">查看全部咨询师</button>
+      </view>
+    </view>
+  </scroll-view>
+</view>

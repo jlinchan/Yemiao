@@ -1,0 +1,108 @@
+<view class="book-detail-page">
+  <view class="detail-topbar" style="{{nav.topbarStyle}}">
+    <button class="topbar-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回">
+      <view class="back-arrow"></view>
+    </button>
+    <text class="topbar-title">书籍介绍</text>
+  </view>
+
+  <scroll-view class="detail-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <view wx:if="{{book}}">
+      <view class="book-hero">
+        <image class="hero-art" src="{{book.hero}}" mode="aspectFill"></image>
+        <view class="hero-shade"></view>
+        <text class="hero-star hero-star-a">✦</text>
+        <text class="hero-star hero-star-b">✦</text>
+        <text class="hero-star hero-star-c">✧</text>
+
+        <view class="hero-content" style="padding-top: {{heroTop}}px;">
+          <view class="cover-stage">
+            <view class="cover-aura"></view>
+            <image class="hero-cover" src="{{book.detailCover}}" mode="aspectFill"></image>
+            <view class="cover-edge"></view>
+          </view>
+
+          <text class="hero-title">{{book.title}}</text>
+          <view class="hero-sub-row">
+            <text class="hero-line">✦</text>
+            <text class="hero-subtitle">{{book.subtitle}}</text>
+            <text class="hero-line">✦</text>
+          </view>
+          <text class="hero-author">{{book.author}}</text>
+          <text class="hero-meta" wx:if="{{book.metaLine}}">{{book.metaLine}}</text>
+
+          <view class="tag-row">
+            <text class="book-tag" wx:for="{{book.tags}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-body">
+        <view class="about-card">
+          <view class="section-heading">
+            <image class="section-icon" src="/assets/home/icons/icon-book.png" mode="aspectFit"></image>
+            <text class="section-title">关于这本书</text>
+          </view>
+          <text class="about-copy">{{book.introduction}}</text>
+          <view class="status-note" wx:if="{{book.statusLine}}">
+            <text class="status-dot">◇</text>
+            <text class="status-copy">{{book.statusLine}}</text>
+          </view>
+        </view>
+
+        <view class="skill-section">
+          <view class="skill-heading">
+            <view class="skill-heading-copy">
+              <text class="skill-spark">✦</text>
+              <text class="skill-heading-title">书中技能 · 精选</text>
+            </view>
+            <text class="skill-count" wx:if="{{book.hasSkills}}">{{book.skills.length}} 项</text>
+          </view>
+
+          <view class="book-skill-list" wx:if="{{book.hasSkills}}">
+            <button
+              class="book-skill"
+              wx:for="{{book.skills}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="openSkill"
+              hover-class="is-pressed"
+              aria-label="打开技能：{{item.title}}"
+            >
+              <view class="skill-icon-shell">
+                <image class="skill-icon" src="{{item.icon}}" mode="aspectFit"></image>
+              </view>
+              <view class="skill-copy">
+                <text class="book-skill-title">{{item.title}}</text>
+                <text class="book-skill-desc">{{item.desc}}</text>
+              </view>
+              <text class="skill-arrow">›</text>
+            </button>
+          </view>
+
+        </view>
+
+        <text class="closing-line">✦　循着书页，慢慢找回好睡眠　✦</text>
+        <view class="scroll-bottom-space"></view>
+      </view>
+    </view>
+
+    <view class="invalid-state" wx:elif="{{invalid}}">
+      <image class="invalid-art" src="/assets/home/night-bg.jpg" mode="aspectFill"></image>
+      <view class="invalid-veil"></view>
+      <view class="invalid-copy">
+        <text class="invalid-mark">✦</text>
+        <text class="invalid-title">没有找到这本书</text>
+        <text class="invalid-desc">书籍链接可能已失效，返回书中技能列表再试一次。</text>
+        <button class="invalid-back" bindtap="goBack" hover-class="is-pressed">返回上一页</button>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="detail-footer" wx:if="{{book}}">
+    <button class="start-chat-button" bindtap="startBookConversation" hover-class="is-pressed" aria-label="开始对话：{{book.title}}">
+      <text>开始对话</text>
+      <text class="start-chat-arrow">→</text>
+    </button>
+  </view>
+</view>

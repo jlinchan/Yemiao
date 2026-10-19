@@ -1,0 +1,47 @@
+<view class="skills-page">
+  <scroll-view class="skills-scroll" scroll-y>
+    <view class="skills-header" style="padding-top: {{nav.statusBarHeight}}px;">
+      <view class="moon-garden" aria-hidden="true"><view class="moon"></view><view class="star star-a"></view><view class="star star-b"></view><view class="star star-c"></view></view>
+      <view class="skills-heading" style="min-height: {{nav.navigationHeight}}px; padding-right: {{nav.rightInset}}px;">
+        <button class="skills-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed">‹</button>
+        <text class="skills-title">书中技能</text>
+      </view>
+      <view class="skills-category-bar">
+        <scroll-view class="skills-categories" scroll-x="true" show-scrollbar="false">
+          <view class="skills-category-track">
+            <button class="category-pill {{category === item.id ? 'is-selected' : ''}}" size="mini" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="selectCategory" hover-class="is-pressed">{{item.label}}</button>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+    <view class="skill-list">
+      <view class="skill-card" wx:for="{{skills}}" wx:key="id">
+        <button
+          class="skill-cover"
+          data-id="{{item.id}}"
+          catchtap="openBookDetail"
+          hover-class="is-pressed"
+          aria-label="查看书籍介绍：{{item.title}}"
+        >
+          <image src="{{item.cover}}" mode="aspectFill" aria-label="{{item.title}}插画"></image>
+          <view class="cover-shade"></view>
+        </button>
+        <view class="skill-copy">
+          <text class="skill-title">{{item.title}}</text>
+          <text class="skill-desc">{{item.shortDescription}}</text>
+          <view class="skill-actions">
+            <view class="skill-tags">
+              <text class="skill-tag" wx:for="{{item.displayTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+            </view>
+            <button class="skill-cta" size="mini" data-id="{{item.id}}" catchtap="startConversation" hover-class="is-pressed">开始对话 <text>›</text></button>
+          </view>
+        </view>
+      </view>
+      <view class="directory-empty" wx:if="{{!skills.length}}">
+        <text class="empty-title">没有找到匹配的技能</text>
+        <text class="empty-description">试试其他分类。</text>
+        <button class="empty-reset" bindtap="resetFilters">查看全部技能</button>
+      </view>
+    </view>
+  </scroll-view>
+</view>
