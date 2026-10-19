@@ -1,0 +1,20 @@
+<view class="page-shell settings-page">
+  <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}"><button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回呼吸首页"><view class="back-arrow"></view></button><text class="topbar-label">设置</text></view>
+  <view class="settings-content">
+    <text class="page-title">呼吸设置</text>
+    <text class="page-copy">把空间调成更适合你的样子。</text>
+    <view class="settings-group">
+      <picker mode="selector" range="{{worlds}}" range-key="name" bindchange="onWorldChange"><view class="setting-row"><text>我的呼吸世界</text><text class="setting-value">{{worldName}} ›</text></view></picker>
+      <picker mode="selector" range="{{rhythms}}" range-key="name" bindchange="onRhythmChange"><view class="setting-row"><text>呼吸节奏</text><text class="setting-value">{{rhythmName}} {{settings.inhaleSeconds}}-{{settings.holdSeconds}}-{{settings.exhaleSeconds}} ›</text></view></picker>
+      <view class="setting-row"><text>触觉反馈</text><switch checked="{{settings.hapticEnabled}}" color="#acc7b1" data-key="hapticEnabled" bindchange="onToggleChange"></switch></view>
+      <view class="setting-row"><text>结束提示音</text><switch checked="{{settings.endSoundEnabled}}" color="#acc7b1" data-key="endSoundEnabled" bindchange="onToggleChange"></switch></view>
+    </view>
+    <button class="secondary-button settings-sound" bindtap="goSound">环境声音与白噪音 ›</button>
+    <view class="privacy-section">
+      <text class="privacy-title">数据与边界</text>
+      <text class="privacy-copy">你的呼吸、日记和睡眠记录只保存在本机。呼吸空间用于日常放松，不提供医疗诊断或治疗。</text>
+      <button class="secondary-button" bindtap="clearRecords">清除个人记录</button>
+      <button class="text-button" bindtap="resetPreferences">恢复默认偏好</button>
+    </view>
+  </view>
+</view>

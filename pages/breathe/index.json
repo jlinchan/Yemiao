@@ -1,0 +1,21 @@
+{
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "navigationStyle": "custom",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true
+    }
+  },
+  "usingComponents": {
+    "world-visual": "/components/world-visual/index",
+    "lavender-scene": "./components/lavender-scene/index",
+    "cloud-scene": "./components/cloud-scene/index",
+    "firefly-scene": "./components/firefly-scene/index",
+    "orb-scene": "./components/orb-scene/index",
+    "whale-scene": "./components/whale-scene/index",
+    "night-tabbar": "/components/night-tabbar/index"
+  },
+  "disableScroll": true
+}

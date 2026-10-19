@@ -1,0 +1,49 @@
+# 呼吸空间 CI：push / PR 自动执行语法检查 → 单元测试 → 打包体积门禁，另有 gitleaks 密钥扫描。
+# 设计原则（对应项目 2MB 上传包红线与 secrets.js 管理约定）：
+# - 不引入任何 npm 依赖：项目本身无 package.json，全部用 node 内置能力跑。
+# - 上传包体积门禁复用 tools/pack-budget.js，超 2MB 直接红，防止资源悄悄膨胀。
+# - gitleaks 扫描提交内容，防止浙大网关密钥等服务密钥误提交。
+
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check (node --check)
+        run: git ls-files '*.js' | xargs -n1 node --check
+
+      - name: Unit tests (node --test)
+        run: node --test tests/*.test.js
+
+      - name: Pack budget gate (2MB upload limit)
+        run: node tools/pack-budget.js
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    # gitleaks-action 在 pull_request 事件下会向 PR 写扫描评论，
+    # 默认 GITHUB_TOKEN 无此权限会 403（Resource not accessible by integration）。
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for leaked secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

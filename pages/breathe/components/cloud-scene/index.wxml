@@ -1,0 +1,9 @@
+<view class="cloud-scene" aria-hidden="true">
+  <view class="cloud-backdrop">
+    <image class="cloud cloud--one" style="{{cloudOneStyle}}" src="/pages/breathe/assets/cloud/cloud_1.jpg" mode="aspectFill" draggable="false"></image>
+    <image class="cloud cloud--two" style="{{cloudTwoStyle}}" src="/pages/breathe/assets/cloud/cloud_2.jpg" mode="aspectFill" draggable="false"></image>
+    <image class="cloud cloud--three" style="{{cloudThreeStyle}}" src="/pages/breathe/assets/cloud/cloud_3.jpg" mode="aspectFill" draggable="false"></image>
+    <view class="cloud-shade cloud-shade--top"></view>
+    <view class="cloud-shade cloud-shade--bottom"></view>
+  </view>
+</view>

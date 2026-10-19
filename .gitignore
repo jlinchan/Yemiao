@@ -1,0 +1,29 @@
+# WeChat DevTools local preferences
+project.private.config.json
+
+# Local design references and generated previews
+Fig/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# AI assistant working directory (memory, reports)
+.workbuddy/
+
+# Temporary files and logs
+*.log
+*.tmp
+*.temp
+
+# Secrets (copy from services/secrets.example.js)
+services/secrets.js
+
+# Accidental .NET build artifacts
+ihcheck*/
+
+# Dependency/cache directories if introduced later
+node_modules/
+miniprogram_npm/

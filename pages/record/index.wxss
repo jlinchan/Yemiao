@@ -1,0 +1,84 @@
+@import '../../styles/night-theme.wxss';
+
+page { background: #031819; }
+.record-page { height: 100vh; overflow: hidden; color: var(--night-text); background: linear-gradient(180deg, #020e14 0%, #061719 52%, #0a2422 100%); font-family: -apple-system, 'Microsoft YaHei', sans-serif; letter-spacing: 0; }
+.record-page button { margin: 0; padding: 0; background: transparent; color: inherit; border-radius: 0; line-height: 1.4; font-size: 14px; transition: transform .12s ease, opacity .12s ease, background .2s ease, border-color .2s ease; }
+.record-scroll { height: 100%; }
+.record-content { padding-bottom: calc(176rpx + env(safe-area-inset-bottom)); }
+
+/* ---------------- 头部 ---------------- */
+.record-header { position: relative; height: 300rpx; }
+.header-art { position: absolute; inset: 0; width: 100%; height: 100%; animation: fade-in 480ms var(--ease-out); }
+.record-header::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(2,14,20,.5) 0%, rgba(2,14,20,.16) 30%, rgba(2,14,20,0) 52%, rgba(6,23,25,.62) 84%, #061719 100%); }
+.header-copy { position: relative; display: flex; flex-direction: column; gap: 12rpx; padding: 30rpx 32rpx; max-width: 70%; animation: rise-in 320ms var(--ease-out) both; }
+.record-title { font-family: 'Noto Serif SC', 'Songti SC', SimSun, serif; font-size: 28px; line-height: 1.5; }
+.muted { display: block; color: var(--night-muted); font-size: 12px; line-height: 1.6; white-space: pre-line; }
+.record-body { display: flex; flex-direction: column; gap: 28rpx; padding: 0 32rpx; }
+/* wcc 不支持通配选择器，改用显式类名错峰入场 */
+.record-body > .calendar-panel { animation: rise-in 300ms var(--ease-out) 40ms both; }
+.record-body > .weekly-banner { animation: rise-in 300ms var(--ease-out) 90ms both; }
+.record-body > .journal-heading { animation: rise-in 300ms var(--ease-out) 140ms both; }
+.record-body > .journal-entry { animation: rise-in 300ms var(--ease-out) 190ms both; }
+
+/* ---------------- 月历 ---------------- */
+.calendar-panel { padding: 20rpx 20rpx 24rpx; border: 1rpx solid var(--night-hairline); border-radius: 32rpx; background: var(--night-panel); box-shadow: 0 10rpx 28rpx rgba(0, 0, 0, .16); }
+.month-nav { display: flex; align-items: center; margin-bottom: 12rpx; }
+.month-nav .month-arrow { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; }
+.month-arrow image { width: 20px; height: 20px; opacity: .85; }
+.arrow-left { transform: rotate(180deg); }
+.month-label { flex: 1; text-align: center; font-family: SimSun, serif; font-size: 17px; }
+.month-nav .month-current { display: flex; align-items: center; justify-content: center; min-width: max(112rpx, 44px); height: 44px; padding: 0 20rpx; color: var(--night-gold); font-size: 12px; border: 1rpx solid var(--night-gold-line); border-radius: 999rpx; background: rgba(232, 200, 135, .06); }
+.calendar-row { display: flex; justify-content: space-between; margin-bottom: 12rpx; }
+.weekdays { color: var(--night-muted); font-size: 12px; line-height: 32px; }
+.weekdays text, .day-slot { width: 14.2857%; text-align: center; }
+.day-slot { display: flex; justify-content: center; }
+.record-page .day { position: relative; display: flex; align-items: center; justify-content: center; width: 84rpx; height: 84rpx; border: 1rpx solid rgba(168, 193, 183, .18); border-radius: 50%; background: rgba(16, 36, 38, .4); font-size: 16px; }
+.record-page .day--early { background: rgba(121, 187, 135, .16); border-color: rgba(121, 187, 135, .62); color: #a8dcb1; }
+.record-page .day--middle { background: rgba(232, 200, 135, .16); border-color: rgba(232, 200, 135, .6); color: var(--night-gold); }
+.record-page .day--late { background: rgba(221, 98, 98, .16); border-color: rgba(221, 98, 98, .58); color: #f19494; }
+.record-page .day--other { border-style: dashed; }
+.record-page .day--outside { opacity: .32; }
+.record-page .day--selected { border-color: var(--night-gold); box-shadow: 0 0 0 2rpx rgba(232, 200, 135, .5), 0 0 24rpx rgba(232, 200, 135, .22); }
+.today-mark { position: absolute; bottom: 5rpx; left: calc(50% - 3rpx); width: 6rpx; height: 6rpx; background: var(--night-gold); border-radius: 50%; }
+.legend-title { display: block; margin: 18rpx 0 8rpx; color: var(--night-muted); font-size: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8rpx; color: var(--night-muted); font-size: 12px; line-height: 1.8; }
+.legend-early { color: #79bb87; }.legend-middle { color: var(--night-gold); margin-left: 10rpx; }.legend-late { color: #dd6262; }
+
+/* ---------------- 周报与日记 ---------------- */
+.weekly-banner, .record-page .journal-entry { position: relative; display: flex; align-items: center; min-height: 192rpx; padding: 24rpx 32rpx; border: 1rpx solid var(--night-gold-line); border-radius: 32rpx; overflow: hidden; }
+.banner-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.banner-copy { position: relative; width: 86%; text-align: left; }
+.weekly-title { font-size: 17px; line-height: 34px; }.gold-number { color: var(--night-gold); font-size: 27px; font-family: SimSun, serif; }.weekly-empty { font-size: 16px; line-height: 30px; }
+.journal-heading { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; }.journal-heading > view { flex: 1; min-width: 0; }
+.section-title { display: block; font-family: 'Songti SC', SimSun, serif; font-size: 22px; line-height: 1.6; }
+.record-page .all-button { display: flex; align-items: center; justify-content: center; min-width: max(120rpx, 44px); height: 44px; color: var(--night-gold); font-size: 12px; border: 1rpx solid var(--night-gold-line); border-radius: 999rpx; background: rgba(232, 200, 135, .06); }.all-button image { width: 16px; height: 16px; }
+.record-page .journal-entry { width: 100%; min-height: 200rpx; text-align: left; }.entry-copy { position: relative; flex: 1; min-width: 0; }.entry-title { display: block; font-size: 19px; font-family: SimSun, serif; line-height: 1.6; }
+.entry-arrow { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 80rpx; height: 80rpx; border-radius: 50%; background: linear-gradient(135deg, #f0d49a, #e2bd76); box-shadow: 0 6rpx 20rpx rgba(232, 200, 135, .24); }.entry-arrow image { width: 20px; height: 20px; }
+.journal-row { display: flex; align-items: center; gap: 16rpx; height: 188rpx; padding: 20rpx 12rpx 20rpx 24rpx; border: 1rpx solid var(--night-hairline); border-radius: 28rpx; background: var(--night-panel); box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, .12); }
+.journal-date { display: flex; flex-direction: column; gap: 4rpx; width: 112rpx; flex-shrink: 0; color: var(--night-muted); font-size: 12px; line-height: 1.6; }
+.journal-thumb { width: 60rpx; height: 140rpx; flex-shrink: 0; border-radius: 12rpx; }
+.journal-summary { flex: 1; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 20px; max-height: 40px; word-break: break-all; }
+.record-page .more-button { width: 44px; height: 44px; flex-shrink: 0; color: var(--night-muted); font-size: 22px; }
+.record-note, .empty-journal { display: block; color: var(--night-muted); font-size: 12px; line-height: 1.8; white-space: pre-line; }.empty-journal { padding: 24rpx 0; text-align: center; font-size: 14px; }
+
+/* ---------------- 底部导航（与夜喵首页一致） ---------------- */
+.record-tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 10; }
+.active-line { width: 8rpx; height: 8rpx; border-radius: 4rpx; background: var(--night-gold); box-shadow: 0 0 14rpx rgba(232, 200, 135, .7); animation: pop-in 280ms var(--ease-spring) 120ms both; }
+
+/* ---------------- 全部日记 ---------------- */
+.journal-all { position: fixed; inset: 0; z-index: 20; background: linear-gradient(180deg, #020e14 0%, #061719 52%, #0a2422 100%); display: flex; flex-direction: column; animation: fade-in 240ms var(--ease-out); }
+.all-heading { display: flex; justify-content: space-between; align-items: center; padding: 0 24rpx; border-bottom: 1rpx solid var(--night-hairline); }
+.all-heading button { min-width: 44px; height: 44px; color: var(--night-gold); }
+.all-heading image { width: 20px; height: 20px; }
+.all-scroll { height: 0; flex: 1; padding: 24rpx 32rpx calc(32rpx + env(safe-area-inset-bottom)); }
+.all-scroll .journal-row { margin-bottom: 24rpx; }
+
+/* ---------------- 详情抽屉 ---------------- */
+.detail-mask { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; background: rgba(2, 10, 12, .72); animation: veil-in 200ms var(--ease-out); }
+.detail-sheet { width: 100%; padding: 32rpx 32rpx calc(40rpx + env(safe-area-inset-bottom)); border-radius: 36rpx 36rpx 0 0; border-top: 1rpx solid rgba(232, 200, 135, .18); background: linear-gradient(180deg, #0f2325, #0b1f21); animation: sheet-up 320ms var(--ease-spring); }
+.detail-heading { display: flex; align-items: center; justify-content: space-between; }
+.detail-heading button { width: 44px; height: 44px; }
+.detail-heading image { width: 20px; height: 20px; }
+.detail-scroll { max-height: 60vh; }
+.detail-date, .detail-main, .journal-full { display: block; margin: 24rpx 0; font-size: 16px; line-height: 1.8; word-break: break-all; white-space: pre-wrap; }
+.record-page .edit-button { width: 100%; margin-top: 24rpx; min-height: max(88rpx, 44px); color: #24312c; font-weight: 500; background: linear-gradient(135deg, #f0d49a, #e2bd76); box-shadow: 0 6rpx 24rpx rgba(232, 200, 135, .24); border-radius: 999rpx; }

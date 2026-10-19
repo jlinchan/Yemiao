@@ -1,0 +1,80 @@
+<view class="world world--{{world}} world--{{variant}} phase--{{phase}} {{compact ? 'world--compact' : ''}}">
+  <view class="vignette"></view>
+  <view class="ambient ambient--one"></view>
+  <view class="ambient ambient--two"></view>
+
+  <view
+    wx:for="{{particles}}"
+    wx:key="id"
+    class="ambient-particle"
+    style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.size}}rpx; height: {{item.size}}rpx; animation-delay: -{{item.delay}}s;"
+  ></view>
+
+  <block wx:if="{{world === 'dandelion'}}">
+    <view class="dandelion">
+      <view class="dandelion-photo-layer" aria-label="随呼吸轻轻飘动的蒲公英">
+        <image class="dandelion-stem-static" src="/assets/dandelion/stem-static.png" mode="aspectFit"></image>
+        <view class="dandelion-crown-anchor">
+          <view class="dandelion-crown-motion">
+            <image class="dandelion-crown dandelion-crown--full" src="/assets/dandelion/crown-full.png" mode="aspectFit"></image>
+            <image class="dandelion-crown dandelion-crown--loosened" src="/assets/dandelion/crown-loosened.png" mode="aspectFit"></image>
+            <image class="dandelion-crown dandelion-crown--sparse" src="/assets/dandelion/crown-sparse.png" mode="aspectFit"></image>
+          </view>
+        </view>
+        <view class="photo-seeds photo-seeds--{{phase}}" aria-hidden="true">
+          <view wx:for="{{photoSeeds}}" wx:key="id" class="photo-seed photo-seed--{{item.id}} photo-seed--{{item.layer}} {{item.preview ? 'photo-seed--preview' : ''}}">
+            <image class="photo-seed-image" src="/assets/dandelion/seed.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+      <canvas wx:if="{{useCanvas}}" type="2d" id="dandelionCanvas" class="dandelion-canvas"></canvas>
+      <view wx:if="{{!useCanvas}}" class="dandelion-fallback photo-fallback" aria-hidden="true">
+        <view class="fallback-glow"></view>
+        <view class="fallback-stem"></view>
+        <view class="fallback-head">
+          <view
+            wx:for="{{fallbackFilaments}}"
+            wx:key="id"
+            class="fallback-filament fallback-filament--{{item.layer}}"
+            style="{{item.style}}"
+          ><view class="fallback-tuft"></view></view>
+          <view class="fallback-core"><view class="fallback-core__grain"></view></view>
+        </view>
+        <view
+          wx:for="{{fallbackSeeds}}"
+          wx:key="id"
+          class="fallback-seed fallback-seed--{{index % 4}}"
+          style="{{item.style}}"
+        ><view class="fallback-seed__tuft"></view><view class="fallback-seed__tail"></view></view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{world === 'mist'}}">
+    <image wx:for="{{moonlitFrames}}" wx:key="id" class="moonlit-surface" src="{{item.src}}" mode="aspectFill" style="opacity: {{item.opacity}};"></image>
+  </block>
+
+  <block wx:elif="{{world === 'moon'}}">
+    <view class="moon-halo moon-halo--outer"></view>
+    <view class="moon-halo moon-halo--inner"></view>
+    <view class="moon-disc"><view class="moon-shadow"></view></view>
+  </block>
+
+  <block wx:elif="{{world === 'stardust'}}">
+    <image
+      class="starfield-animation"
+      src="/assets/animation/starfield-figma-a.jpg"
+      mode="aspectFit"
+      aria-label="星空呼吸动画"
+    ></image>
+  </block>
+
+  <view
+    wx:if="{{bodyPart}}"
+    class="body-focus"
+    style="left: {{partPosition.x}}%; top: {{partPosition.y}}%;"
+  >
+    <view class="body-focus__halo"></view>
+    <view class="body-focus__core"></view>
+  </view>
+</view>

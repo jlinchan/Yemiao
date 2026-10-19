@@ -1,0 +1,12 @@
+<view class="lavender-scene" aria-label="银河下随风摇曳的薰衣草花海">
+  <view class="lavender-frame" style="{{sceneStyle}}">
+    <image class="lavender-background" src="{{backgroundFailed ? '/pages/breathe/assets/lavender/original.jpg' : '/pages/breathe/assets/lavender/background.jpg'}}" mode="aspectFit" binderror="onBackgroundError"></image>
+    <block wx:if="{{!backgroundFailed}}">
+      <view wx:for="{{sprigs}}" wx:key="id" class="lavender-anchor lavender-anchor--{{item.id}} {{playing ? '' : 'lavender-paused'}}" style="{{item.style}}">
+        <image class="lavender-sprig" src="{{item.src}}" mode="scaleToFill" binderror="onSprigError"></image>
+      </view>
+    </block>
+    <view class="lavender-mist lavender-mist--back {{playing ? '' : 'lavender-paused'}}"></view>
+    <view class="lavender-mist lavender-mist--front {{playing ? '' : 'lavender-paused'}}"></view>
+  </view>
+</view>
