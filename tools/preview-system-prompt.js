@@ -36,6 +36,7 @@ function compose(rawOptions) {
     const nightPreferences = require('../services/night-preferences');
     const agentPersona = require('../utils/agent-persona');
     const agentVoice = require('../utils/agent-voice');
+    const agentKnowledge = require('../utils/agent-knowledge');
     const agentClient = require('../services/agent-client');
     const experts = require('../experts/registry');
     const books = require('../books/registry');
@@ -55,8 +56,10 @@ function compose(rawOptions) {
     const context = options.context || '';
     const prompt = agentClient.buildSystemPrompt('', context, persona, expert, book);
     const voice = agentVoice.buildVoicePrompt();
+    const knowledge = agentKnowledge.buildKnowledgePrompt();
     const parts = [
       ['声音段（恒定）', voice.length],
+      ['知识段（恒定）', knowledge.length],
       ['persona 段（个性化设置）', persona.length],
       ['专家段', expert.length],
       ['书卡段', book.length],

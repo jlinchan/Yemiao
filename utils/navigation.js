@@ -7,7 +7,7 @@ function backOrHome() {
   wx.reLaunch({ url: '/pages/home/index' });
 }
 
-// 同一页面内的同一目标只接受一次连续点击，避免快速双击叠加多个聊天/详情页。
+// 同一页面内的同一目标只接受一次连续点击，避免快速双击叠加多个页面。
 function navigateOnce(page, key, url) {
   if (!url) return false;
   const now = Date.now();

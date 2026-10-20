@@ -69,3 +69,18 @@ test('valueLabel maps like, dislike and a bare note', () => {
   assert.equal(agentReviews.valueLabel('dislike'), '踩');
   assert.equal(agentReviews.valueLabel(''), '留言');
 });
+
+test('feedbackLine turns reasoned reviews into style guidance and skips bare votes', () => {
+  withStorage({}, () => {
+    assert.equal(agentReviews.feedbackLine(), '', '没有评价时不产出');
+    agentReviews.upsert({ messageId: 'm1', value: 'like' });
+    assert.equal(agentReviews.feedbackLine(), '', '纯点赞踩没有理由，不产出');
+    agentReviews.upsert({ messageId: 'm2', value: 'dislike', quote: '别想太多', reason: '有点说教感' });
+    agentReviews.upsert({ messageId: 'm3', value: 'like', quote: '先接住情绪', reason: '这样被接住的感觉很好' });
+    const line = agentReviews.feedbackLine();
+    assert.ok(line.indexOf('用户不喜欢的表达：有点说教感') !== -1);
+    assert.ok(line.indexOf('用户喜欢的表达：这样被接住的感觉很好') !== -1);
+    assert.ok(line.indexOf('实时调整表达风格') !== -1);
+    assert.ok(line.indexOf('不要向用户提及') !== -1, '提醒模型不要自我指涉');
+  });
+});

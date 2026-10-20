@@ -1,24 +1,25 @@
 <view class="page-shell cat-page">
   <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}">
-    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回">
-      <view class="back-arrow"></view>
+    <button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回">
+      <image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/>
     </button>
-    <text class="topbar-label">练习</text>
+    <text class="topbar-label">书中对话</text>
   </view>
 
   <scroll-view class="cat-scroll" scroll-y wx:if="{{book}}">
-    <view class="cat-body">
+    <view class="cat-body" style="padding-top: {{nav.navigationBottom}}px;">
       <view class="detail-head">
         <image class="detail-cover" src="{{book.cover}}" mode="aspectFill"></image>
         <view class="detail-copy">
           <text class="detail-title">{{book.title}}</text>
           <text class="detail-desc">{{book.desc}}</text>
-          <text class="detail-meta">{{book.minutes}} 分钟 · {{book.steps.length}} 步练习</text>
+          <text class="detail-meta">约 {{book.minutes}} 分钟 · {{book.steps.length}} 个引导问题</text>
         </view>
       </view>
 
       <text class="detail-summary">{{book.summary}}</text>
 
+      <text class="step-heading">对话会这样进行</text>
       <view class="step-list">
         <view class="step" wx:for="{{book.steps}}" wx:key="title">
           <view class="step-index">{{index + 1}}</view>
@@ -29,10 +30,9 @@
         </view>
       </view>
 
-      <button class="cat-cta detail-cta" bindtap="startPractice" hover-class="is-pressed">开始 {{book.minutes}} 分钟呼吸练习</button>
-      <button class="cat-cta cat-cta--ghost detail-cta" bindtap="talkToNightcat" hover-class="is-pressed">和夜喵聊聊这本书</button>
+      <button class="cat-cta detail-cta" bindtap="talkToNightcat" hover-class="is-pressed">开始和夜喵聊聊</button>
 
-      <text class="cat-note">练习脚本是本地内容；呼吸练习会跳到项目里已有的呼吸页，练习结果只保存在本机。</text>
+      <text class="cat-note">夜喵会用这本书的方法问你几个问题，不替你下结论。对话和记录只保存在本机。</text>
     </view>
   </scroll-view>
 </view>

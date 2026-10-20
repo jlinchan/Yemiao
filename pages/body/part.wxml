@@ -1,6 +1,6 @@
 <view class="page-shell part-page world-bg--{{settings.world}}">
   <view class="topbar" style="{{nav.topbarStyle}}">
-    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回身体扫描"><view class="back-arrow"></view></button>
+    <button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回身体扫描"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/></button>
   </view>
 
   <view class="part-heading" style="top: {{nav.navigationBottom + 26}}px;">

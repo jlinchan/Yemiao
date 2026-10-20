@@ -1,3 +1,4 @@
+require('./agent-test-config');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -22,7 +23,7 @@ function harness(sharedStore) {
     showToast: ({ title }) => toasts.push(title),
     onKeyboardHeightChange() {}, offKeyboardHeightChange() {},
     navigateTo() {}, reLaunch() {},
-    request: () => { throw new Error('network down'); }
+    request: (options) => { options.success({ statusCode: 200, data: { choices: [{ message: { content: '测试模型回复' } }] } }); return { abort() {} }; }
   };
   const script = path.resolve(__dirname, '../pages/agent/index.js');
   global.wx = wx;

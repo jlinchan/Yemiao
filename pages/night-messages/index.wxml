@@ -1,5 +1,5 @@
 <view class="nd-page">
-  <view class="ns-top" style="{{nav.topbarStyle}}"><button class="ns-back" hover-class="is-pressed" bindtap="goBack" aria-label="返回夜喵"><image src="/assets/agent/icons/arrow-left-muted.png"/></button><text>消息</text></view>
+  <view class="ns-top" style="{{nav.topbarStyle}}"><button class="nav-back" hover-class="is-pressed" bindtap="goBack" aria-label="返回夜喵"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png"/></button><text>消息</text></view>
   <scroll-view class="nd-scroll" scroll-y show-scrollbar="{{false}}">
     <view class="nd-content">
       <view wx:if="{{unread > 0}}" class="nd-actions"><text class="nd-unread-copy">{{unread}} 条未读</text><button class="nd-readall" bindtap="markAllRead" hover-class="is-pressed">全部已读</button></view>

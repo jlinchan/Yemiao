@@ -44,6 +44,18 @@ function extractInjectionBlock(text) {
   return source.slice(start + START_MARK.length, end).trim();
 }
 
+// 环境背景（2026-10-18）：frontmatter 之后、注入块之前的源卡正文整段提取——
+// 书目身份、章节骨架、考证与页码都在这里。用户要求"Markdown 完全塞下、至少要有环境背景"，
+// 运行时把这段完整注入 system prompt，让模型能查到出处与背景，而不是只看蒸馏版。
+function extractBackground(text) {
+  const source = String(text || '');
+  const fm = /^---\r?\n[\s\S]*?\r?\n---/.exec(source);
+  const bodyStart = fm ? fm[0].length : 0;
+  const start = source.indexOf(START_MARK);
+  const body = start === -1 ? source.slice(bodyStart) : source.slice(bodyStart, start);
+  return body.trim();
+}
+
 // 由源卡文本解析出 { id, card, warnings }；格式不合法返回 { error }。
 function parseBookCard(text) {
   const meta = parseFrontmatter(text);
@@ -66,13 +78,36 @@ function parseBookCard(text) {
     return parts.length < 2 || !parts[0].trim() || !parts.slice(1).join('｜').trim();
   });
   if (badQuote) return { error: `quotes 条目缺少出处（格式「转述句｜出处」）：${badQuote}` };
+  // 原句引用库（excerpts）：逐字引用的白名单，条目格式「原句｜出处」。
+  // 出处必须同时带【直读】标记与页码/章节定位——没有落处的"原句"一律退回 quotes 转述，
+  // 从管线层面杜绝编造原文（2026-10-18 扩充：书卡 md 支持原句引用能力）。
+  const excerpts = Array.isArray(meta.excerpts) ? meta.excerpts.filter((item) => item && item.trim()) : [];
+  const LOCATOR = /(p{1,2}\.\s*\d|第[0-9一二三四五六七八九十]{1,3}(章|次|节)|附录|开篇|末章|序言)/;
+  const badExcerpt = excerpts.find((item) => {
+    const index = item.indexOf('｜');
+    if (index === -1 || !item.slice(0, index).trim()) return true;
+    const source = item.slice(index + 1).trim();
+    return !source || source.indexOf('【直读】') === -1 || !LOCATOR.test(source);
+  });
+  if (badExcerpt) return { error: `excerpts 条目须为「原句｜出处」，且出处带页码/章节定位与【直读】标记：${badExcerpt}` };
   const warnings = prompt.length > PROMPT_WARN_LENGTH
     ? [`注入版 ${prompt.length} 字，超过建议上限 ${PROMPT_WARN_LENGTH} 字`]
     : [];
   if (quotes.length > 8) warnings.push(`quotes ${quotes.length} 条，超过建议上限 8 条`);
+  if (excerpts.length > 6) warnings.push(`excerpts ${excerpts.length} 条，超过建议上限 6 条`);
+  const background = extractBackground(text);
+  if (background.length > 16000) warnings.push(`背景正文 ${background.length} 字，超过建议上限 16000 字（模型上下文预算）`);
+  // 管线级截断（2026-10-19 主包瘦身）：运行时 registry 只消费前 6000 字
+  // （BACKGROUND_MAX_CHARS，按「\n## 」章节边界切），打包前先截，行为零变化、包体省 ~10KB。
+  const BACKGROUND_MAX_CHARS = 6000;
+  const trimmedBackground = (() => {
+    if (background.length <= BACKGROUND_MAX_CHARS) return background;
+    const cut = background.lastIndexOf('\n## ', BACKGROUND_MAX_CHARS);
+    return `${background.slice(0, cut === -1 ? BACKGROUND_MAX_CHARS : cut).trimEnd()}\n\n……（背景过长仅保留前段；完整源卡见 docs/books/ 对应文件）`;
+  })();
   return {
     id,
-    card: { label: meta.label, title: meta.title, intro: meta.intro, prompt, starters, sources, quotes, boundaries: meta.boundaries },
+    card: { label: meta.label, title: meta.title, intro: meta.intro, prompt, starters, sources, quotes, excerpts, background: trimmedBackground, boundaries: meta.boundaries },
     warnings
   };
 }

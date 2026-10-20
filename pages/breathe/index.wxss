@@ -476,9 +476,9 @@
 
 .setting-row--world .setting-label {
   position: absolute;
-  left: 50%;
+  left: 0;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   pointer-events: none;
   white-space: nowrap;
 }

@@ -153,7 +153,7 @@
       <view class="sheet-handle"></view>
       <text class="sheet-title">呼吸设置</text>
       <view class="setting-row setting-row--world">
-        <text class="setting-label">我的呼吸世界</text>
+        <text class="setting-label">场景切换</text>
         <button
           class="setting-world-trigger"
           bindtap="openWorldPickerFromSettings"

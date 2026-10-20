@@ -14,6 +14,9 @@ const KEYS = {
   agentReviews: 'sleepwell.agent-reviews.v1',
   agentEvents: 'sleepwell.agent-events.v1',
   agentChat: 'sleepwell.agent.chat.v1',
+  // 会话档案（2026-10-18）：归档会话列表 + 当前进行中的会话。
+  agentSessions: 'sleepwell.agent.sessions.v1',
+  agentActive: 'sleepwell.agent.active.v1',
   guideSessions: 'sleepwell.guide-sessions.v1',
   accessCode: 'sleepwell.access-code.v1',
   // 夜喵对话偏好（人格/音色/记忆开关/求助地区等）。此前未注册，「清除数据」清不掉它（README 已知问题）。
@@ -123,7 +126,7 @@ function getSevenDaySummary(now, sessions) {
 }
 
 function clearPersonalRecords() {
-  const results = [write(KEYS.sessions, []), write(KEYS.journal, []), write(KEYS.sleep, []), write(KEYS.agentMemory, []), write(KEYS.agentFeedback, []), write(KEYS.agentTasks, []), write(KEYS.agentFacts, []), write(KEYS.agentThoughts, []), write(KEYS.agentMessages, []), write(KEYS.agentReviews, []), write(KEYS.agentEvents, []), write(KEYS.guideSessions, []), write(KEYS.agentChat, '')];
+  const results = [write(KEYS.sessions, []), write(KEYS.journal, []), write(KEYS.sleep, []), write(KEYS.agentMemory, []), write(KEYS.agentFeedback, []), write(KEYS.agentTasks, []), write(KEYS.agentFacts, []), write(KEYS.agentThoughts, []), write(KEYS.agentMessages, []), write(KEYS.agentReviews, []), write(KEYS.agentEvents, []), write(KEYS.guideSessions, []), write(KEYS.agentChat, ''), write(KEYS.agentSessions, []), write(KEYS.agentActive, '')];
   // 夜喵偏好里的个人数据（心事清单/记忆开关/求助地区）一并清掉；
   // 人格、音色、就寝时间等纯偏好保留。函数内 require 避免 storage <-> night-preferences 的加载环。
   let preferencesOk = true;

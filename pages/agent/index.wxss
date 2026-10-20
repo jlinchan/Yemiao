@@ -10,6 +10,12 @@ page {
   --night-muted: #8a9b9b;
   --night-faint: #7d8f8d;
   --night-panel: #102426;
+  /* 面板层级 token（2026-10-18 质感统一）：夜色面板从浅到深三级 + 统一内高光，
+     新组件一律取用 token，不再散落近似色值。 */
+  --night-panel-1: rgba(16, 36, 38, .5);
+  --night-panel-2: rgba(24, 50, 52, .66);
+  --night-panel-3: rgba(12, 28, 30, .52);
+  --night-inset-highlight: inset 0 1rpx 0 rgba(255, 255, 255, .05);
   --night-hairline: rgba(168, 193, 183, .14);
   --night-gold-line: rgba(232, 200, 135, .22);
   --ease-out: cubic-bezier(.22, .61, .36, 1);
@@ -70,7 +76,7 @@ page {
 .welcome-line--ask { color: #d9c79b; }
 
 .topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16rpx; margin-top: 20rpx; animation: home-up 320ms var(--ease-out) 110ms both; }
-.topic-chip { display: flex; align-items: center; gap: 12rpx; min-height: max(88rpx, 44px); padding: 12rpx 22rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: rgba(16,36,38,.5); box-shadow: inset 0 1rpx 0 rgba(255,255,255,.04); text-align: left; }
+.topic-chip { display: flex; align-items: center; gap: 12rpx; min-height: max(88rpx, 44px); padding: 12rpx 22rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: var(--night-panel-1); box-shadow: var(--night-inset-highlight); text-align: left; }
 .topic-chip .topic-icon { flex: 0 0 36rpx; width: 36rpx; height: 36rpx; }
 .topic-label { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.35; word-break: break-word; }
 .topic-chevron { flex: none; width: 12rpx; height: 12rpx; border-top: 2rpx solid rgba(168,193,183,.45); border-right: 2rpx solid rgba(168,193,183,.45); transform: rotate(45deg); }
@@ -145,16 +151,26 @@ page {
    保持夜色主题下浅色文字可读；内容层（heading/stream/input）z-index:1 盖在背景上。 */
 .chat-bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; }
 .chat-bg-shade { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background: linear-gradient(180deg, rgba(6,23,25,.36) 0%, rgba(6,23,25,.5) 30%, rgba(6,23,25,.62) 58%, rgba(6,23,25,.74) 100%); }
+/* 顶栏三段布局（flex 固定宽占位，兼容真机渲染）：左返回 88rpx / 中标题自适应居中 / 右动作组固定 176rpx。
+   左右占位等宽对齐（88 = 176/2），标题不受两侧按钮数量影响、恒在屏幕正中。 */
 .chat-heading { position: relative; z-index: 1; flex: none; display: flex; align-items: center; padding: 0 20rpx 10rpx; }
-.chat-back, .chat-more { flex: 0 0 max(88rpx, 44px); width: max(88rpx, 44px); height: max(88rpx, 44px); display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-.chat-back image, .chat-more image { width: 40rpx; height: 40rpx; }
+.chat-actions { flex: 0 0 176rpx; display: flex; align-items: center; justify-content: flex-end; }
+.chat-back, .chat-more, .chat-tts { flex: 0 0 88rpx; width: 88rpx; height: 88rpx; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+/* 顶栏按钮增强：夜色玻璃底 + 金线描边 + 内高光，从「隐形图标」变成可感知的按钮
+   （chat-back 视觉已收敛到全局 .nav-back 规范，此处保留 more/tts 两枚） */
+.chat-more, .chat-tts {
+  background: linear-gradient(160deg, rgba(20, 44, 46, .78), rgba(8, 24, 26, .62));
+  border: 1rpx solid rgba(232, 200, 135, .22);
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, .22), inset 0 1rpx 0 rgba(255, 255, 255, .07);
+}
+.chat-more image, .chat-tts image { width: 40rpx; height: 40rpx; filter: drop-shadow(0 0 8rpx rgba(232, 200, 135, .18)); }
 /* 顶栏圆形按钮的弹性按压：回收时带回弹，比默认缩放更有「按下去被托住」的手感 */
-.night-page .chat-back, .night-page .chat-more { transition: transform 260ms var(--ease-spring), opacity .16s ease, background .2s ease; }
-.night-page .chat-back.is-pressed, .night-page .chat-more.is-pressed { transform: scale(.86); opacity: .78; background: rgba(232,200,135,.08); }
-.chat-title-block { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6rpx; }
-.chat-title { font-size: 17px; font-weight: 500; letter-spacing: 2rpx; }
+.night-page .chat-more, .night-page .chat-tts { transition: transform 260ms var(--ease-spring), opacity .16s ease, background .2s ease, border-color .2s ease; }
+.night-page .chat-more.is-pressed, .night-page .chat-tts.is-pressed { transform: scale(.86); opacity: .82; background: linear-gradient(160deg, rgba(232, 200, 135, .16), rgba(8, 24, 26, .66)); border-color: rgba(232, 200, 135, .44); }
+.chat-title-block { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6rpx; }
+.chat-title { font-size: 17px; font-weight: 500; letter-spacing: 2rpx; text-align: center; }
 
-.agent-status { display: inline-flex; align-items: center; gap: 8rpx; padding: 4rpx 16rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 999rpx; background: rgba(16,36,38,.5); color: #a8b9b6; font-size: 10.5px; line-height: 1.5; letter-spacing: 1rpx; }
+.agent-status { display: inline-flex; align-items: center; gap: 8rpx; padding: 4rpx 18rpx; border: 1rpx solid rgba(232, 200, 135, .2); border-radius: 999rpx; background: rgba(8, 24, 26, .55); color: #b9c8c4; font-size: 10.5px; line-height: 1.5; letter-spacing: 1rpx; box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, .05); }
 .agent-status .status-dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: #5f7a72; transition: background 240ms ease; }
 .agent-status--listening .status-dot { background: var(--night-gold); animation: pulse-soft 1.1s ease-in-out infinite; }
 .agent-status--streaming { color: var(--night-gold); border-color: rgba(232,200,135,.3); }
@@ -166,12 +182,11 @@ page {
 .chat-message { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 26rpx; animation: rise-in 240ms var(--ease-out); }
 .chat-message--user { align-items: flex-end; }
 .chat-speaker { padding: 0 10rpx 8rpx; color: var(--night-faint); font-size: 11px; line-height: 1.4; letter-spacing: 1rpx; }
-.chat-message--agent .chat-speaker { color: #d8c898; }
 .chat-bubble {
   max-width: 84%; padding: 22rpx 28rpx;
   border: 1rpx solid var(--night-hairline); border-radius: 28rpx 28rpx 28rpx 10rpx;
-  background: linear-gradient(150deg, rgba(24,50,52,.66), rgba(12,28,30,.52));
-  box-shadow: 0 6rpx 18rpx rgba(0,0,0,.12);
+  background: linear-gradient(150deg, var(--night-panel-2), var(--night-panel-3));
+  box-shadow: 0 6rpx 18rpx rgba(0,0,0,.12), var(--night-inset-highlight);
   font-size: 14.5px; line-height: 1.75; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap;
 }
 .chat-message--user .chat-bubble { border-radius: 28rpx 28rpx 10rpx 28rpx; border-color: rgba(232,200,135,.34); background: linear-gradient(135deg, #f2d79e, #e3bd77); color: #24312c; font-weight: 500; }
@@ -182,25 +197,27 @@ page {
 .typing-dot:nth-child(2) { animation-delay: .15s; }
 .typing-dot:nth-child(3) { animation-delay: .3s; }
 
-.msg-actions { display: flex; gap: 4rpx; margin-top: 8rpx; padding-left: 4rpx; animation: fade-in 200ms ease-out 60ms both; }
-.msg-act { display: flex; align-items: center; justify-content: center; width: 72rpx; min-width: 72rpx; min-height: 44px; padding: 0; border-radius: 18rpx; background: transparent; }
-.msg-act image { width: 32rpx; height: 32rpx; opacity: .78; }
-.msg-act.is-act-pressed { background: rgba(168,193,183,.1); }
-.msg-act.is-like { background: rgba(232,200,135,.1); }
-.msg-act.is-dislike { background: rgba(201,138,138,.1); }
+/* 消息操作栏 v4：无底框、无 filter——图标数据源直接是近白（ICE）版本，真机零渲染风险 */
+/* 消息操作栏 v9：原版星屑形状 1:1 光栅化 PNG（近白增强版），无底框无 filter；
+   PNG 真机渲染 100% 可靠，白色在夜湖深浅背景均可辨。左对齐紧凑排列。 */
+.msg-actions { display: flex; align-items: center; gap: 4rpx; margin-top: 8rpx; }
+.msg-act { display: flex; align-items: center; justify-content: center; width: 64rpx; min-width: 64rpx; height: 64rpx; min-height: 64rpx; margin: 0; padding: 0; border-radius: 16rpx; background: transparent; }
+.msg-act image { width: 38rpx; height: 38rpx; }
+.msg-act.is-act-pressed { transform: scale(.88); opacity: .8; }
+.msg-act.is-like, .msg-act.is-dislike, .msg-act.is-speaking { background: rgba(8, 24, 26, .3); }
 .is-act-pressed { transform: scale(.88); opacity: .8; }
 
 .chat-error { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; margin: 4rpx 0 26rpx; padding: 20rpx 24rpx; border: 1rpx solid rgba(201,138,138,.26); border-radius: 22rpx; background: rgba(46,30,30,.32); animation: rise-in 240ms var(--ease-out); }
 .chat-error-text { min-width: 0; color: #d9b9b9; font-size: 13px; line-height: 1.7; }
-.chat-error-retry { flex: none; min-height: max(64rpx, 44px); padding: 0 30rpx; border: 1rpx solid rgba(232,200,135,.36); border-radius: 999rpx; color: var(--night-gold); font-size: 13px; line-height: 64rpx; background: rgba(232,200,135,.06); }
+.chat-error-retry { display: flex; align-items: center; justify-content: center; flex: none; min-height: 60rpx; padding: 0 30rpx; border: 1rpx solid rgba(232,200,135,.36); border-radius: 999rpx; color: var(--night-gold); font-size: 13px; line-height: 1; background: rgba(232,200,135,.06); }
 
 .skill-feedback { display: flex; align-items: center; gap: 16rpx; margin-bottom: 26rpx; padding: 18rpx 24rpx; border: 1rpx solid rgba(78,138,122,.28); border-radius: 22rpx; background: rgba(16,42,38,.5); animation: rise-in 240ms var(--ease-out); }
 .skill-feedback-text { flex: 1; min-width: 0; color: #9ec7b8; font-size: 13px; line-height: 1.7; word-break: break-word; }
-.skill-feedback-link { flex: none; min-height: max(60rpx, 44px); padding: 0 20rpx; border: 1rpx solid rgba(78,138,122,.32); border-radius: 999rpx; color: #8cc7b2; font-size: 12px; line-height: 60rpx; }
+.skill-feedback-link { display: flex; align-items: center; justify-content: center; flex: none; min-height: 56rpx; padding: 0 20rpx; border: 1rpx solid rgba(78,138,122,.32); border-radius: 999rpx; color: #8cc7b2; font-size: 12px; line-height: 1; }
 .skill-confirm-card { display: flex; flex-direction: column; gap: 16rpx; margin-bottom: 26rpx; padding: 22rpx 24rpx; border: 1rpx solid rgba(216,203,160,.26); border-radius: 22rpx; background: rgba(46,42,26,.45); animation: rise-in 240ms var(--ease-out); }
 .skill-confirm-text { color: #d8cba0; font-size: 13px; line-height: 1.7; word-break: break-word; }
 .skill-confirm-actions { display: flex; gap: 16rpx; }
-.skill-confirm-actions button { flex: 1; min-height: max(76rpx, 44px); border-radius: 999rpx; font-size: 13px; line-height: 76rpx; }
+.skill-confirm-actions button { display: flex; align-items: center; justify-content: center; flex: 1; min-height: max(76rpx, 44px); border-radius: 999rpx; font-size: 13px; line-height: 1; }
 .skill-confirm-yes { color: #12241f; background: linear-gradient(135deg, #e8d5a4, #d8c48f); }
 .skill-confirm-no { color: var(--night-muted); border: 1rpx solid rgba(168,193,183,.22); }
 
@@ -218,10 +235,17 @@ page {
 .recommendation-play { display: flex; align-items: center; justify-content: center; gap: 10rpx; min-height: max(72rpx, 44px); margin-top: auto; padding: 0 20rpx; border-radius: 999rpx; background: linear-gradient(135deg, #f0d49a, #e2bd76); color: #24312c; font-size: 13.5px; }
 
 .chat-end-row { display: flex; justify-content: center; padding: 10rpx 0 6rpx; animation: fade-in 240ms ease-out; }
-.chat-end-chip { min-height: max(68rpx, 44px); padding: 0 30rpx; border: 1rpx solid rgba(168,193,183,.18); border-radius: 999rpx; background: rgba(16,36,38,.32); color: var(--night-muted); font-size: 12.5px; line-height: 68rpx; }
+.chat-end-chip { display: flex; align-items: center; justify-content: center; min-height: 60rpx; padding: 0 30rpx; border: 1rpx solid rgba(168,193,183,.18); border-radius: 999rpx; background: rgba(16,36,38,.32); color: var(--night-muted); font-size: 12.5px; line-height: 1; }
 .conversation-end { height: 20rpx; }
 
 /* 输入条不裁切也不模糊内容：backdrop-filter 会在每次气泡重排时整层重新合成，改近实心底色保证滚动优先 */
+/* 对话模式三档（Reflex/Reframe/Reflect）：加号面板顶部三卡，选中金框高亮 */
+.mode-chip { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 2rpx; min-height: 88rpx; border: 1rpx solid var(--night-hairline); border-radius: 18rpx; background: rgba(16,36,38,.5); }
+.mode-chip-name { font-size: 13px; color: var(--night-text); }
+.mode-chip-desc { font-size: 10px; color: var(--night-muted); }
+.mode-chip.is-active { border-color: rgba(232,200,135,.55); background: rgba(232,200,135,.1); }
+.mode-chip.is-active .mode-chip-name { color: var(--night-gold); }
+.mode-chip.is-active .mode-chip-desc { color: var(--night-gold); opacity: .75; }
 .chat-input-row { position: relative; z-index: 1; flex: none; padding: 14rpx 32rpx calc(14rpx + env(safe-area-inset-bottom)); border-top: 1rpx solid rgba(168,193,183,.1); background: rgba(4,16,18,.96); }
 .chat-input-wrap { position: relative; display: flex; align-items: center; gap: 12rpx; min-height: max(92rpx, 48px); padding: 8rpx 8rpx 8rpx 12rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 999rpx; background: rgba(16,36,38,.6); transition: border-color 200ms ease, box-shadow 200ms ease; }
 .chat-input-wrap.is-focused { border-color: rgba(232,200,135,.34); box-shadow: 0 0 0 6rpx rgba(232,200,135,.06); }
@@ -252,11 +276,7 @@ page {
 
 /* —— 语音入口（WechatSI 朗读 / 按住说话，services/voice-service.js）—— */
 /* 顶栏朗读开关：与 chat-back/chat-more 同尺寸的圆形按钮，开启时金底微亮提示「在听」。 */
-.chat-tts { flex: 0 0 max(88rpx, 44px); width: max(88rpx, 44px); height: max(88rpx, 44px); display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-.chat-tts image { width: 40rpx; height: 40rpx; }
-.night-page .chat-tts { transition: transform 260ms var(--ease-spring), opacity .16s ease, background .2s ease; }
-.night-page .chat-tts.is-pressed { transform: scale(.86); opacity: .78; background: rgba(232,200,135,.08); }
-.chat-tts.is-on { background: rgba(232,200,135,.1); }
+.chat-tts.is-on { border-color: rgba(232, 200, 135, .5); background: linear-gradient(160deg, rgba(232, 200, 135, .2), rgba(8, 24, 26, .66)); box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, .22), 0 0 14rpx rgba(232, 200, 135, .18), inset 0 1rpx 0 rgba(255, 255, 255, .08); }
 /* 输入行麦克风：按住说话期间金点呼吸，松手即停。 */
 .chat-mic { flex: 0 0 max(80rpx, 44px); width: max(80rpx, 44px); height: max(80rpx, 44px); margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 .chat-mic image { width: 40rpx; height: 40rpx; transition: transform 260ms var(--ease-out); }
@@ -267,7 +287,7 @@ page {
 
 .source-chip-row { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 0 32rpx 10rpx; }
 .source-chip-row .expert-chip { margin: 0; }
-.expert-chip { flex: none; align-self: flex-start; display: flex; align-items: center; gap: 10rpx; margin: 0 32rpx 10rpx; padding: 0 20rpx; min-height: max(64rpx, 44px); border: 1rpx solid rgba(232,200,135,.3); border-radius: 999rpx; background: rgba(232,200,135,.07); color: #d9c79b; font-size: 11.5px; animation: fade-in 240ms ease-out; }
+.expert-chip { flex: none; align-self: flex-start; display: flex; align-items: center; gap: 10rpx; margin: 0 32rpx 10rpx; padding: 0 20rpx; min-height: 56rpx; border: 1rpx solid rgba(232,200,135,.3); border-radius: 999rpx; background: rgba(232,200,135,.07); color: #d9c79b; font-size: 11.5px; animation: fade-in 240ms ease-out; }
 .expert-chip-emblem { width: 30rpx; height: 30rpx; }
 
 .chat-panel { position: relative; z-index: 1; flex: none; max-height: 0; overflow: hidden; opacity: 0; border-top: 1rpx solid rgba(232,200,135,.1); background: rgba(4,16,18,.97); transition: max-height 320ms var(--ease-out), opacity 220ms ease; }
@@ -287,16 +307,16 @@ page {
 .panel-title text:first-of-type { font-size: 13px; color: var(--night-text); letter-spacing: 1rpx; }
 .panel-title .panel-hint { color: var(--night-muted); font-size: 10.5px; }
 
-/* 面板主体 v2：图标收进金描边圆井，单行不增高；播放中的声音芯片亮金点。 */
-.quick-row { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.quick-item, .sound-chip { flex: 0 0 auto; display: flex; align-items: center; gap: 8rpx; min-height: max(88rpx, 44px); padding: 0 10rpx; border: 1rpx solid var(--night-hairline); border-radius: 999rpx; background: rgba(16,36,38,.5); }
-.chip-icon { flex: none; display: flex; align-items: center; justify-content: center; width: 36rpx; height: 36rpx; border: 1rpx solid var(--night-gold-line); border-radius: 50%; background: rgba(232,200,135,.06); }
-.chip-icon image { width: 24rpx; height: 24rpx; }
-.quick-label, .sound-chip text { min-width: 0; font-size: 11.5px; color: #b9c8c4; }
-.sound-chip.is-playing { border-color: rgba(232,200,135,.5); background: rgba(232,200,135,.1); }
-.sound-chip.is-playing .chip-icon { border-color: rgba(232,200,135,.55); background: rgba(232,200,135,.16); }
+/* 面板主体 v3：chip 规格对齐首页 topic-chip（26rpx 圆角 + hairline 边框 + 裸图标），全站一套 chip 语言 */
+.quick-row { display: flex; flex-wrap: wrap; gap: 16rpx; }
+.quick-item, .sound-chip { flex: 0 0 auto; display: flex; align-items: center; gap: 12rpx; min-height: max(88rpx, 44px); padding: 0 22rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: var(--night-panel-1); box-shadow: var(--night-inset-highlight); }
+.chip-icon { flex: none; display: flex; align-items: center; justify-content: center; width: 36rpx; height: 36rpx; }
+.chip-icon image { width: 32rpx; height: 32rpx; }
+.quick-label, .sound-chip text { min-width: 0; font-size: 12.5px; color: #cdd9d5; }
+.sound-chip.is-playing { border-color: rgba(232, 200, 135, .5); background: linear-gradient(150deg, rgba(232, 200, 135, .12), rgba(16, 36, 38, .5)); }
+.sound-chip.is-playing .chip-icon image { filter: drop-shadow(0 0 8rpx rgba(232, 200, 135, .3)); }
 .sound-live { flex: none; width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--night-gold); animation: live-pulse 1.5s ease-in-out infinite; }
-.quick-item.is-live { border-color: rgba(232,200,135,.42); background: rgba(232,200,135,.07); }
+.quick-item.is-live { border-color: rgba(232, 200, 135, .42); background: linear-gradient(150deg, rgba(232, 200, 135, .1), rgba(16, 36, 38, .5)); }
 
 /* ---------------- 右侧抽屉：详细功能 ---------------- */
 .drawer-mask { position: fixed; z-index: 60; top: 0; right: 0; bottom: 0; left: 0; background: rgba(2, 9, 11, .58); animation: fade-in 220ms ease-out; }
@@ -306,7 +326,7 @@ page {
 .drawer-heading { display: flex; flex-direction: column; gap: 6rpx; }
 .drawer-title { font-size: 16px; color: var(--night-text); letter-spacing: 2rpx; }
 .drawer-sub { font-size: 10.5px; color: var(--night-muted); letter-spacing: 2rpx; }
-.drawer-close { display: flex; align-items: center; justify-content: center; width: max(76rpx, 44px); height: max(76rpx, 44px); border: 1rpx solid var(--night-hairline); border-radius: 50%; background: rgba(16,36,38,.5); }
+.drawer-close { display: flex; align-items: center; justify-content: center; width: max(76rpx, 44px); height: max(76rpx, 44px); border: 1rpx solid var(--night-hairline); border-radius: 50%; background: var(--night-panel-1); }
 .drawer-close image { width: 34rpx; height: 34rpx; }
 .drawer-body { flex: 1 1 0; height: 0; min-height: 0; padding: 28rpx 32rpx calc(28rpx + env(safe-area-inset-bottom)); }
 .drawer.is-open .drawer-body { animation: drawer-rise 340ms var(--ease-out); }
@@ -318,7 +338,7 @@ page {
 .drawer-hint { color: var(--night-muted); font-size: 10.5px; }
 
 .expert-list, .drawer-actions { display: flex; flex-direction: column; gap: 12rpx; }
-.expert-item { display: flex; align-items: flex-start; gap: 18rpx; min-height: max(96rpx, 44px); padding: 16rpx 20rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: rgba(16,36,38,.5); transition: border-color 220ms ease, background 220ms ease; }
+.expert-item { display: flex; align-items: flex-start; gap: 18rpx; min-height: max(96rpx, 44px); padding: 16rpx 20rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: var(--night-panel-1); transition: border-color 220ms ease, background 220ms ease; }
 .expert-item.is-active { border-color: rgba(232,200,135,.5); background: linear-gradient(150deg, rgba(232,200,135,.12), rgba(16,36,38,.5)); }
 .expert-item-emblem { flex: none; display: flex; align-items: center; justify-content: center; width: 56rpx; height: 56rpx; border: 1rpx solid var(--night-gold-line); border-radius: 50%; background: rgba(232,200,135,.06); }
 .expert-item-emblem image { width: 34rpx; height: 34rpx; }
@@ -335,15 +355,63 @@ page {
 .expert-source-caret.is-open { transform: rotate(225deg); }
 .expert-source-list { display: flex; flex-direction: column; gap: 6rpx; padding: 8rpx 0 4rpx; animation: fade-in 220ms ease-out; }
 .expert-source-line { color: var(--night-faint); font-size: 10.5px; line-height: 1.6; }
+/* 原句引用（2026-10-18 书卡扩充）：与来源档案同排但更亮一档，暗示这是可直接说的原话。 */
+.expert-source-line.is-excerpt { color: var(--night-soft, #c9d8cd); }
+/* 思考路径（2026-10-18）：夜喵回复上方的可折叠推理面板，流式期间展开、答完收起。 */
+.think-block { margin: 0 0 10rpx; padding: 12rpx 18rpx; border: 1px solid rgba(255, 255, 255, .08); border-radius: 14rpx; background: rgba(255, 255, 255, .04); }
+.think-head { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; }
+.think-label { color: var(--night-faint); font-size: 11px; letter-spacing: 1px; }
+.think-caret { color: var(--night-faint); font-size: 10.5px; }
+.think-body { margin-top: 8rpx; color: var(--night-soft, #c9d8cd); font-size: 12px; line-height: 1.7; }
+/* 知识援引（Dify 检索命中卡）：与思考路径同层语言，金线描边区分「依据」属性。 */
+.kb-searching { display: flex; align-items: center; gap: 10rpx; margin: 0 0 10rpx; padding: 10rpx 18rpx; border: 1px solid rgba(255, 255, 255, .08); border-radius: 14rpx; background: rgba(255, 255, 255, .04); color: var(--night-faint); font-size: 10.5px; }
+.kb-searching-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--night-gold); animation: kb-pulse 1.2s ease-in-out infinite; }
+@keyframes kb-pulse { 0%, 100% { opacity: .25; } 50% { opacity: .9; } }
+.kb-card { margin: 0 0 10rpx; padding: 12rpx 18rpx; border: 1rpx solid var(--night-gold-line); border-radius: 14rpx; background: var(--night-panel-1); box-shadow: var(--night-inset-highlight); }
+.kb-head { display: flex; align-items: center; gap: 10rpx; }
+.kb-icon { flex: none; width: 28rpx; height: 28rpx; }
+.kb-label { flex: 1; color: var(--night-gold); font-size: 11px; opacity: .9; }
+.kb-caret { transition: transform .2s ease; color: var(--night-faint); font-size: 10.5px; }
+.kb-body { margin-top: 4rpx; }
+.kb-hit { display: flex; gap: 12rpx; margin-top: 12rpx; padding-top: 12rpx; border-top: 1rpx solid var(--night-hairline); animation: kb-in .28s ease-out both; }
+@keyframes kb-in { from { opacity: 0; transform: translateY(6rpx); } to { opacity: 1; transform: none; } }
+.kb-hit-badge { flex: none; width: 34rpx; height: 34rpx; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1rpx solid rgba(232,200,135,.5); color: var(--night-gold); font-size: 10px; margin-top: 2rpx; }
+.kb-hit-main { flex: 1; min-width: 0; }
+.kb-hit:first-child { margin-top: 6rpx; padding-top: 0; border-top: none; }
+.kb-hit-source { display: block; color: var(--night-gold); font-size: 10px; opacity: .75; margin-bottom: 4rpx; }
+.kb-hit-text { display: block; color: var(--night-soft, #c9d8cd); font-size: 11.5px; line-height: 1.6; }
 
 .drawer .starter-row { display: flex; flex-direction: column; align-items: stretch; gap: 12rpx; margin-top: 14rpx; animation: fade-in 240ms ease-out; }
 .drawer .starter-chip { display: flex; align-items: center; min-height: max(76rpx, 44px); padding: 12rpx 22rpx; border: 1rpx dashed rgba(168,193,183,.32); border-radius: 18rpx; color: #b9c8c4; font-size: 11.5px; line-height: 1.5; }
 
-.drawer-action { display: flex; align-items: center; gap: 22rpx; min-height: max(110rpx, 48px); padding: 18rpx 24rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: rgba(16,36,38,.5); }
+.drawer-action { display: flex; align-items: center; gap: 22rpx; min-height: max(110rpx, 48px); padding: 18rpx 24rpx; border: 1rpx solid var(--night-hairline); border-radius: 26rpx; background: var(--night-panel-1); }
 .drawer-action > image { flex: none; width: 40rpx; height: 40rpx; }
 .drawer-action-copy { display: flex; flex-direction: column; gap: 2rpx; }
 .drawer-action-label { font-size: 13.5px; color: var(--night-text); }
 .drawer-action-hint { font-size: 10.5px; color: var(--night-muted); }
+
+/* ---------------- 会话档案：每段对话独立记录，可回看/继续/删除 ---------------- */
+.archive-list { display: flex; flex-direction: column; gap: 12rpx; }
+.archive-item {
+  display: flex; align-items: center; gap: 14rpx;
+  min-height: max(108rpx, 44px); padding: 16rpx 12rpx 16rpx 20rpx;
+  border: 1rpx solid var(--night-hairline); border-radius: 22rpx;
+  background: var(--night-panel-1);
+  box-shadow: var(--night-inset-highlight);
+  transition: border-color 220ms ease, background 220ms ease;
+}
+.archive-main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4rpx; }
+.archive-title { font-size: 12.5px; color: var(--night-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.archive-meta { font-size: 10.5px; color: var(--night-muted); line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.archive-del {
+  flex: none; width: 56rpx; height: 56rpx; margin: 0; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: transparent; opacity: .55;
+  transition: opacity 200ms ease, background 200ms ease;
+}
+.archive-del image { width: 24rpx; height: 24rpx; }
+.archive-del.is-act-pressed { opacity: 1; background: rgba(201,138,138,.14); }
+.archive-empty { padding: 4rpx 4rpx 2rpx; color: var(--night-faint); font-size: 11px; line-height: 1.7; }
 
 /* ---------------- 消息操作栏：三点菜单 ---------------- */
 .msg-block { display: flex; flex-direction: column; align-items: flex-start; }
@@ -361,7 +429,7 @@ page {
 .review-input { width: 100%; min-height: max(120rpx, 52px); max-height: 240rpx; padding: 18rpx 22rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 22rpx; background: rgba(16,36,38,.6); color: var(--night-text); font-size: 13.5px; line-height: 1.6; }
 .review-count { align-self: flex-end; color: var(--night-faint); font-size: 10.5px; }
 .review-foot { display: flex; gap: 16rpx; margin-top: 4rpx; }
-.review-foot button { flex: 1; min-height: max(84rpx, 44px); border-radius: 999rpx; font-size: 13px; line-height: 84rpx; }
+.review-foot button { display: flex; align-items: center; justify-content: center; flex: 1; min-height: max(84rpx, 44px); border-radius: 999rpx; font-size: 13px; line-height: 1; }
 .review-cancel { color: var(--night-muted); border: 1rpx solid rgba(168,193,183,.22); background: transparent; }
 .review-save { color: #12241f; background: linear-gradient(135deg, #f0d49a, #e2bd76); }
 .review-save[disabled] { background: rgba(168,193,183,.18); color: var(--night-muted); opacity: .55; }
@@ -373,7 +441,7 @@ page {
 .chat-gate-row { display: flex; align-items: center; gap: 12rpx; margin-top: 6rpx; min-height: max(92rpx, 48px); padding: 8rpx 8rpx 8rpx 28rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 999rpx; background: rgba(16,36,38,.6); transition: border-color 200ms ease, box-shadow 200ms ease; }
 .chat-gate-row.is-focused { border-color: rgba(232,200,135,.34); box-shadow: 0 0 0 6rpx rgba(232,200,135,.06); }
 .chat-gate-input { flex: 1 1 0; width: 0; height: 76rpx; min-height: 76rpx; background: transparent; color: var(--night-text); font-size: 14px; letter-spacing: 2rpx; }
-.chat-gate-submit { flex: none; min-height: max(76rpx, 44px); margin: 0; padding: 0 34rpx; border-radius: 999rpx; color: #12241f; font-size: 13px; line-height: 76rpx; background: linear-gradient(135deg, #f0d49a, #e2bd76); transition: opacity 200ms ease, transform 240ms var(--ease-spring); }
+.chat-gate-submit { display: flex; align-items: center; justify-content: center; flex: none; min-height: max(76rpx, 44px); margin: 0; padding: 0 34rpx; border-radius: 999rpx; color: #12241f; font-size: 13px; line-height: 1; background: linear-gradient(135deg, #f0d49a, #e2bd76); transition: opacity 200ms ease, transform 240ms var(--ease-spring); }
 .chat-gate-submit[disabled] { background: rgba(168,193,183,.18); color: var(--night-muted); transform: scale(.96); }
 .chat-gate-error { color: #d9b9b9; font-size: 12px; line-height: 1.6; }
 
@@ -419,9 +487,9 @@ page {
   width: 330rpx; padding: 14rpx; vertical-align: top;
   border: 1rpx solid var(--night-gold-line); border-radius: 26rpx;
   background: linear-gradient(135deg, rgba(30,48,44,.62), rgba(20,32,30,.5));
-  box-shadow: 0 8rpx 20rpx rgba(0,0,0,.14);
+  box-shadow: 0 8rpx 20rpx rgba(0,0,0,.14), var(--night-inset-highlight);
 }
-.push-cover { width: 106rpx; height: 134rpx; border-radius: 16rpx; overflow: hidden; background: rgba(12,28,30,.7); }
+.push-cover { width: 106rpx; height: 134rpx; border-radius: 16rpx; overflow: hidden; background: var(--night-panel-3); }
 .push-photo { width: 100%; height: 100%; }
 .push-cover.is-glyph { display: flex; align-items: center; justify-content: center; border: 1rpx solid rgba(232,200,135,.24); background: radial-gradient(circle at 32% 24%, rgba(232,200,135,.16), rgba(20,42,40,.9)); }
 .push-glyph { width: 52rpx; height: 52rpx; }
@@ -433,10 +501,10 @@ page {
 .push-action { color: var(--night-gold); font-size: 11px; line-height: 1.4; white-space: nowrap; }
 .push-action::after { content: '›'; margin-left: 4rpx; }
 
-.ask-block { display: flex; flex-direction: column; gap: 14rpx; max-width: 88%; margin: 6rpx 0 4rpx; padding: 20rpx 22rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 24rpx; background: rgba(16,36,38,.5); animation: rise-in 240ms var(--ease-out); }
+.ask-block { display: flex; flex-direction: column; gap: 14rpx; max-width: 88%; margin: 6rpx 0 4rpx; padding: 20rpx 22rpx; border: 1rpx solid rgba(168,193,183,.16); border-radius: 24rpx; background: var(--night-panel-1); animation: rise-in 240ms var(--ease-out); }
 .ask-question { font-size: 13px; line-height: 1.65; color: var(--night-text); }
 .ask-options { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.ask-chip { min-height: max(64rpx, 44px); margin: 0; padding: 0 26rpx; border: 1rpx solid rgba(232,200,135,.34); border-radius: 999rpx; background: rgba(232,200,135,.08); color: #e8d8b0; font-size: 12.5px; line-height: 64rpx; }
+.ask-chip { display: flex; align-items: center; justify-content: center; min-height: max(64rpx, 44px); margin: 0; padding: 0 26rpx; border: 1rpx solid rgba(232,200,135,.34); border-radius: 999rpx; background: rgba(232,200,135,.08); color: #e8d8b0; font-size: 12.5px; line-height: 1; }
 .ask-chip[disabled] { background: rgba(232,200,135,.06); color: #9a8c66; opacity: 1; }
 .ask-chip.is-chosen { border-color: transparent; background: linear-gradient(135deg, #f0d49a, #e2bd76); color: #24312c; font-weight: 500; opacity: 1; }
 .ask-chip.is-dim { opacity: .5; }

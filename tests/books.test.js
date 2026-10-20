@@ -223,3 +223,72 @@ test('book section renders sourced quotes with the paraphrase rule', () => {
   const shipped = registry.buildBookPrompt('perlis-cbti');
   assert.ok(shipped.indexOf('注明改编自本书') !== -1);
 });
+
+// —— 原句引用库（excerpts，2026-10-18 书卡 md 扩充）——
+
+const VALID_EXCERPT = '睡眠效率 ＝ 总睡眠时间 ÷ 在床时间｜附录 1（中文版 p.147）【直读】';
+
+test('excerpts must carry a source with a locator and the direct-read mark', () => {
+  const ok = builder.parseBookCard(SAMPLE_SOURCE.replace('sources:', `excerpts:\n  - ${VALID_EXCERPT}\nsources:`));
+  assert.equal(ok.error, undefined);
+  assert.deepEqual(ok.card.excerpts, [VALID_EXCERPT]);
+
+  // 缺出处分隔符
+  assert.ok(builder.parseBookCard(SAMPLE_SOURCE.replace('sources:', 'excerpts:\n  - 只有一句原话\nsources:')).error.indexOf('excerpts') !== -1);
+  // 出处没有页码/章节定位
+  assert.ok(builder.parseBookCard(SAMPLE_SOURCE.replace('sources:', 'excerpts:\n  - 一句原话｜《示例书》【直读】\nsources:')).error.indexOf('excerpts') !== -1);
+  // 没有【直读】标记：防编造原文
+  assert.ok(builder.parseBookCard(SAMPLE_SOURCE.replace('sources:', 'excerpts:\n  - 一句原话｜《示例书》第 3 章\nsources:')).error.indexOf('excerpts') !== -1);
+});
+
+test('book section renders the excerpt library with the verbatim rules', () => {
+  const section = registry.formatBookSection(Object.assign({}, SAMPLE_CARD, { excerpts: [VALID_EXCERPT] }));
+  assert.ok(section.indexOf('原句引用库') !== -1);
+  assert.ok(section.indexOf('「睡眠效率 ＝ 总睡眠时间 ÷ 在床时间」——附录 1（中文版 p.147）【直读】') !== -1);
+  assert.ok(section.indexOf('逐字照抄，不改写、不拼凑') !== -1);
+  assert.ok(section.indexOf('退回转述口吻') !== -1);
+  // 引用规则：原句只可出自引用库
+  assert.ok(section.indexOf('原句只可出自原句引用库') !== -1);
+
+  const plain = registry.formatBookSection(SAMPLE_CARD);
+  assert.equal(plain.indexOf('原句引用库（仅下列原句'), -1, '没有 excerpts 时不出引用库块');
+});
+
+// —— 环境背景（background，2026-10-18：Markdown 全文塞下）——
+
+test('source card body is extracted as the background and injected into the section', () => {
+  const ok = builder.parseBookCard(SAMPLE_SOURCE);
+  assert.equal(ok.error, undefined);
+  assert.ok(ok.card.background.indexOf('正文段落。') !== -1, 'frontmatter 与注入块之间的正文进背景');
+  assert.equal(ok.card.background.indexOf('核心框架'), -1, '注入块正文不重复进背景');
+
+  const withBackground = registry.formatBookSection(Object.assign({}, SAMPLE_CARD, { background: '## 2. 章节骨架\n第 4 章为逐次晤谈（pp. 34-104）。' }));
+  assert.ok(withBackground.indexOf('书卡背景资料') !== -1);
+  assert.ok(withBackground.indexOf('章节骨架') !== -1);
+
+  const plain = registry.formatBookSection(SAMPLE_CARD);
+  assert.equal(plain.indexOf('书卡背景资料'), -1, '没有 background 时不出背景块');
+});
+
+test('shipped cards carry the full markdown background', () => {
+  const perlis = registry.list().find((item) => item.name === 'perlis-cbti');
+  assert.ok(perlis.background && perlis.background.length > 3000, 'perlis 源卡正文（章节骨架与考证）完整进背景');
+  assert.ok(perlis.background.indexOf('逐次晤谈') !== -1);
+  const toads = registry.list().find((item) => item.name === 'counselling-for-toads');
+  assert.ok(toads.background && toads.background.indexOf('自我状态') !== -1);
+});
+
+test('shipped cards ship verbatim excerpts from direct-read material only', () => {
+  const all = registry.list();
+  all.forEach((card) => {
+    assert.ok(Array.isArray(card.excerpts), `excerpts 字段缺失：${card.name}`);
+    card.excerpts.forEach((item) => {
+      assert.ok(item.indexOf('【直读】') !== -1, `非直读条目混入原句库：${card.name} / ${item}`);
+    });
+  });
+  const perlis = registry.list().find((item) => item.name === 'perlis-cbti');
+  assert.ok(perlis.excerpts.length >= 5, 'perlis 直读材料充足，应至少 5 条原句');
+  assert.ok(perlis.excerpts.some((item) => item.indexOf('p.147') !== -1), '附录 1 睡眠效率公式应在原句库');
+  const toads = registry.list().find((item) => item.name === 'counselling-for-toads');
+  assert.ok(toads.excerpts.length >= 2, '蛤蟆卡至少有开篇与末章两条原句');
+});

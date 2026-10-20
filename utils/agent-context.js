@@ -6,6 +6,7 @@ const agentPort = require('../services/agent-port');
 const agentMemory = require('../services/agent-memory');
 const agentTasks = require('../services/agent-tasks');
 const agentVector = require('../services/agent-vector');
+const agentReviews = require('../services/agent-reviews');
 const agentPersona = require('./agent-persona');
 const nightPreferences = require('../services/night-preferences');
 
@@ -52,6 +53,14 @@ function buildTaskLine() {
   const briefs = safeRead(() => agentTasks.pendingBrief(), []);
   if (!briefs.length) return '';
   return `你和用户的约定：${briefs.join('；')}。到点或合适时机自然地提一句，不要生硬。`;
+}
+
+// 用户的赞踩与理由实时进上下文（2026-10-18）：夜喵据此调整表达风格。
+// 属个人数据，跟随「夜喵记忆」开关。
+function buildFeedbackLine() {
+  const enabled = safeRead(() => nightPreferences.read().memoryEnabled, false);
+  if (!enabled) return '';
+  return safeRead(() => agentReviews.feedbackLine(4), '');
 }
 
 // 语义召回（三因子）：从更早的记忆与 facts 里找出与今晚这条消息最相关的两三条。
@@ -105,6 +114,7 @@ function buildUserContext(now, userMessage) {
     buildFactLine(),
     buildRelatedMemoryLine(userMessage, now),
     buildTaskLine(),
+    buildFeedbackLine(),
     personaContext
   ]).filter(Boolean);
   if (!lines.length) return '';

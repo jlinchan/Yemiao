@@ -116,7 +116,7 @@ test('breathe owns all four scenes and keeps the shared prompts, settings and bo
   }
   assert.match(js, /mainPrompt: '按住，慢慢吸气'/);
   assert.match(js, /subPrompt: '4秒后，跟随提示自然呼吸'/);
-  assert.match(wxml, /我的呼吸世界/);
+  assert.match(wxml, /场景切换/);
   assert.match(wxml, /呼吸节奏/);
   assert.match(wxml, /呼吸次数/);
   assert.match(wxml, /触觉反馈/);
@@ -149,7 +149,7 @@ test('breathe owns all four scenes and keeps the shared prompts, settings and bo
 
   const settingLabels = Array.from(wxml.matchAll(/class="setting-label">([^<]+)</g), (match) => match[1]);
   assert.deepEqual(settingLabels, [
-    '我的呼吸世界',
+    '场景切换',
     '呼吸节奏',
     '呼吸次数',
     '声音',
@@ -362,11 +362,11 @@ test('public UI sits above every scene and retired page-only UI code is gone', (
   assert.match(css, /\.slider-line:nth-child\(3\)\s*\{\s*top:\s*28rpx/);
   // 呼吸世界设置行重构：标题绝对定位居中，触发器吸附行尾（Codex 呼吸设置批次）
   assert.match(wxml, /<view class="setting-row setting-row--world">/);
-  assert.match(wxml, /<text class="setting-label">我的呼吸世界<\/text>/);
+  assert.match(wxml, /<text class="setting-label">场景切换<\/text>/);
   assert.match(wxml, /class="setting-world-trigger"[\s\S]*bindtap="openWorldPickerFromSettings"/);
   assert.match(wxml, /class="setting-world-name">\{\{currentWorld\.name\}\}<\/text>[\s\S]*class="setting-world-arrow"/);
   assert.match(css, /\.setting-row--world\s*\{[^}]*position:\s*relative[^}]*display:\s*block[^}]*width:\s*100%/s);
-  assert.match(css, /\.setting-row--world \.setting-label\s*\{[^}]*position:\s*absolute[^}]*left:\s*50%[^}]*transform:\s*translate\(-50%,\s*-50%\)/s);
+  assert.match(css, /\.setting-row--world \.setting-label\s*\{[^}]*position:\s*absolute[^}]*left:\s*0;[^}]*transform:\s*translateY\(-50%\)/s);
   assert.match(css, /\.setting-world-trigger\s*\{[^}]*position:\s*absolute[^}]*right:\s*0[^}]*max-width:\s*32%/s);
   assert.match(css, /\.setting-world-trigger\s*\{[^}]*min-height:\s*88rpx/s);
   assert.doesNotMatch(css, /\.setting-world-trigger\s*\{[^}]*margin-left:\s*auto/s);

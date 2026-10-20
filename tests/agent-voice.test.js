@@ -1,3 +1,6 @@
+require('./agent-test-config');
+// 测试隔离：屏蔽本机真实 difyKnowledge 配置，避免 chat 先打检索接口干扰 mock 流程。
+require('../services/secrets').difyKnowledge = undefined;
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const voice = require('../utils/agent-voice');
@@ -6,13 +9,15 @@ const experts = require('../experts/registry');
 
 test('voice prompt carries the style DNA, blacklist and few-shot examples', () => {
   const prompt = voice.buildVoicePrompt();
-  ['先接住具体', '有画面', '有呼吸', '留白', '不说教', '有来处'].forEach((key) => {
+  ['先接住具体', '有画面', '有呼吸', '留白', '不评判', '有来处', '知识库段'].forEach((key) => {
     assert.ok(prompt.indexOf(key) !== -1, key);
   });
   assert.ok(prompt.indexOf('我理解你') !== -1);
   assert.ok(prompt.indexOf('绝不编造原话') !== -1);
   assert.ok(prompt.indexOf('今天好累') !== -1);
   assert.ok(prompt.indexOf('不急着填满沉默') !== -1);
+  // 反空话示例：给方法时必须落到具体步骤与数字（2026-10-18 用户反馈：输出太宽泛没干货）。
+  assert.ok(prompt.indexOf('认知洗牌') !== -1 || prompt.indexOf('20 分钟') !== -1);
 });
 
 test('system prompt places the voice section after the intro and before the persona', () => {
@@ -32,9 +37,13 @@ test('system prompt places the voice section after the intro and before the pers
 test('dialogue rules replace the 60-character cap with the scene-based length policy', () => {
   const prompt = agentClient.buildSystemPrompt('', '', '');
   assert.equal(prompt.indexOf('不超过 60 个字'), -1);
-  assert.ok(prompt.indexOf('60-150 字') !== -1);
-  assert.ok(prompt.indexOf('更短、更轻') !== -1);
+  assert.ok(prompt.indexOf('上限约 200 字') !== -1);
+  assert.ok(prompt.indexOf('不设下限') !== -1);
   assert.ok(prompt.indexOf('若用户提到自伤或严重危机') !== -1);
+  // 知识含金量规则：时机（问就给/两轮后给）+ 具体度（名称+步骤+数字）+ 禁空话。
+  assert.ok(prompt.indexOf('从知识库里挑最贴的一条') !== -1);
+  assert.ok(prompt.indexOf('早点睡、放轻松、别想太多') !== -1);
+  assert.ok(prompt.indexOf('一次只给一个方法') !== -1);
 });
 
 test('expert section carries the paraphrase citation protocol', () => {
@@ -56,7 +65,7 @@ test('chat requests ask for enough tokens for the richer replies', () => {
   };
   try {
     agentClient.chat({ onComplete() {}, onError() {} });
-    assert.equal(options.data.max_tokens, 600);
+    assert.equal(options.data.max_tokens, agentClient.MAX_TOKENS);
     assert.ok(options.data.messages[0].content.indexOf('夜喵的声音') !== -1);
   } finally {
     delete global.wx;

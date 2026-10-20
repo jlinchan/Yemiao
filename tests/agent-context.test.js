@@ -65,3 +65,29 @@ test('storage failures degrade to empty context without throwing', () => {
     if (original) global.wx = original; else delete global.wx;
   }
 });
+
+test('reasoned user reviews flow into the context so the tone adapts in real time', () => {
+  const now = Date.now();
+  const context = withStorage({
+    [storage.KEYS.nightPreferences]: { memoryEnabled: true },
+    [storage.KEYS.agentReviews]: [
+      { messageId: 'm2', value: 'dislike', quote: '别想太多', reason: '有点说教感', at: now },
+      { messageId: 'm3', value: 'like', reason: '这样被接住的感觉很好', at: now }
+    ]
+  }, () => buildUserContext(now));
+  assert.ok(context.indexOf('用户近期对夜喵回复的反馈') !== -1);
+  assert.ok(context.indexOf('有点说教感') !== -1);
+  assert.ok(context.indexOf('这样被接住的感觉很好') !== -1);
+
+  const plain = withStorage({
+    [storage.KEYS.nightPreferences]: { memoryEnabled: true },
+    [storage.KEYS.agentReviews]: [{ messageId: 'm1', value: 'like', at: now }]
+  }, () => buildUserContext(now));
+  assert.ok(plain.indexOf('用户近期对夜喵回复的反馈') === -1, '无理由的赞踩不注入');
+
+  const off = withStorage({
+    [storage.KEYS.nightPreferences]: { memoryEnabled: false },
+    [storage.KEYS.agentReviews]: [{ messageId: 'm2', value: 'dislike', reason: '说教', at: now }]
+  }, () => buildUserContext(now));
+  assert.ok(off.indexOf('用户近期对夜喵回复的反馈') === -1, '记忆开关关闭时不注入');
+});

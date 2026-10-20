@@ -80,7 +80,7 @@ function parseExpertCard(text) {
 // 生成 experts/cards.js 源码；按标识排序稳定输出，便于 diff。
 function buildCardsModule(cards) {
   const entries = Object.keys(cards).sort().map((name) => {
-    const json = JSON.stringify(cards[name], null, 2).replace(/\n/g, '\n  ');
+    const json = JSON.stringify(cards[name]);
     return `  ${JSON.stringify(name)}: ${json}`;
   });
   return [

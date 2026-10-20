@@ -43,6 +43,8 @@ Page({
     const counselor = content.findCounselor(id);
     if (!counselor) return;
     this.setData({ selectedId: selection.save(id) });
-    wx.navigateTo({ url: `/pages/agent/index?counselorId=${encodeURIComponent(counselor.id)}` });
+    // 引导语由陪伴者作为开场白说出（entry=counselor），并带上身份 id——
+    // 对话页据此切换头部/说话人名字并注入该陪伴者的 persona（2026-10-19 打通）。
+    wx.navigateTo({ url: `/pages/agent/index?entry=counselor&counselor=${id}&greeting=${encodeURIComponent(counselor.prompt)}` });
   }
 });

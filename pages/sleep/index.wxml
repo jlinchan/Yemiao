@@ -1,5 +1,5 @@
 <view class="page-shell sleep-page">
-  <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}"><button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回呼吸首页"><view class="back-arrow"></view></button><text class="topbar-label">睡眠记录</text></view>
+  <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}"><button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回呼吸首页"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/></button><text class="topbar-label">睡眠记录</text></view>
   <view class="sleep-content safe-bottom">
     <text class="page-title">那一晚，睡得怎么样？</text>
     <text class="page-copy">不用精确，记下大概的时间和感受。</text>

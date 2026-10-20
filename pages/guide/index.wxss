@@ -10,11 +10,6 @@
   flex: none;
 }
 
-.guide-back-icon {
-  width: 36rpx;
-  height: 36rpx;
-}
-
 .guide-stage {
   position: relative;
   display: flex;
@@ -198,6 +193,9 @@
 .guide-end-button {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 96rpx;
   min-height: 88rpx;
   padding: 0 72rpx;

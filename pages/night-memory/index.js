@@ -3,16 +3,20 @@ const { getNavigationMetrics } = require('../../utils/layout');
 const agentMemory = require('../../services/agent-memory');
 
 Page({
-  data: { nav: getNavigationMetrics(), content: '', empty: true },
+  data: { nav: getNavigationMetrics(), sections: [], empty: true, updatedAt: '' },
   onShow() {
     this.setData({ nav: getNavigationMetrics() });
     this.refresh();
   },
-  // 每次打开都重新渲染并落盘，档案永远与最新记录一致。
+  // 每次打开都重新渲染并落盘（memory.md 文字档案保持不变），页面用分区卡片排版展示。
   refresh() {
     agentMemory.writeMemoryFile();
-    const content = agentMemory.readMemoryFile() || agentMemory.renderMemoryMarkdown();
-    this.setData({ content, empty: !content.trim() });
+    const sections = agentMemory.memorySections();
+    this.setData({
+      sections,
+      empty: !sections.length,
+      updatedAt: new Date().toLocaleString('zh-CN', { hour12: false })
+    });
   },
   goBack() { navigation.backOrHome(); },
   clearMemory() {

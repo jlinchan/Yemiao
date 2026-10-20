@@ -20,6 +20,8 @@ Thumbs.db
 
 # Secrets (copy from services/secrets.example.js)
 services/secrets.js
+server/.env
+server/.env.local
 
 # Accidental .NET build artifacts
 ihcheck*/

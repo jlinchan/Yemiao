@@ -33,7 +33,7 @@ test('clears each personal record category without touching settings', () => {
   assert.equal(storage.clearPersonalRecords(), true);
   assert.deepEqual(
     writes.map((item) => item[0]).sort(),
-    [storage.KEYS.agentEvents, storage.KEYS.agentFacts, storage.KEYS.agentFeedback, storage.KEYS.agentMemory, storage.KEYS.agentMessages, storage.KEYS.agentReviews, storage.KEYS.agentTasks, storage.KEYS.agentThoughts, storage.KEYS.agentChat, storage.KEYS.nightPreferences, storage.KEYS.guideSessions, storage.KEYS.journal, storage.KEYS.sessions, storage.KEYS.sleep].sort()
+    [storage.KEYS.agentEvents, storage.KEYS.agentFacts, storage.KEYS.agentFeedback, storage.KEYS.agentMemory, storage.KEYS.agentMessages, storage.KEYS.agentReviews, storage.KEYS.agentTasks, storage.KEYS.agentThoughts, storage.KEYS.agentChat, storage.KEYS.agentSessions, storage.KEYS.agentActive, storage.KEYS.nightPreferences, storage.KEYS.guideSessions, storage.KEYS.journal, storage.KEYS.sessions, storage.KEYS.sleep].sort()
   );
   assert.equal(writes.some((item) => item[0] === storage.KEYS.settings), false);
   // 夜喵偏好只清个人数据字段，纯偏好（人格/音色/就寝时间）保留

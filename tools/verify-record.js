@@ -27,19 +27,28 @@ async function main() {
       assert.ok(box.height <= 40.1);
       const note = await page.locator('.record-note').last().boundingBox();
       const nav = await page.locator('.record-nav').boundingBox();
-      assert.ok(note.y + note.height <= nav.y);
-      await page.screenshot({ path: path.resolve(__dirname,'../docs/design/record-data-' + width + '.png') });
-      await page.locator('.journal-row').click();
-      assert.match(await page.locator('.journal-full').innerText(),/感谢今天完成实验/);
-      await page.getByRole('button',{ name:'关闭详情',exact:true }).click();
-      await page.getByRole('button',{ name:'全部',exact:true }).click();
-      assert.equal(await page.locator('.journal-all .journal-row').count(),1);
-      await page.getByRole('button',{ name:'返回记录',exact:true }).click();
-      await page.getByRole('button',{ name:'呼吸',exact:true }).click();
-      assert.equal(await page.evaluate(() => lastNavigation.url),'/pages/breathe/index');
-      console.log(width + ': six-row calendar, assets, details, long journals, safe area and navigation passed');
+      assert.ok(header.y + header.height <= filters.y + 1);
+      assert.ok(filters.y + filters.height < empty.y);
+      assert.ok(empty.y + empty.height < nav.y);
+      assert.ok(nav.y + nav.height <= height + 1);
+      await page.screenshot({ path: path.resolve(__dirname, '../docs/design/conversation-record-empty-' + width + '.png') });
+      await page.getByRole('tab', { name: '未读 (0)', exact: true }).click();
+      assert.equal(await page.locator('.empty-title').textContent(), '暂无未读会话');
+      await page.getByRole('tab', { name: '已归档 (0)', exact: true }).click();
+      assert.equal(await page.locator('.empty-title').textContent(), '暂无归档会话');
+      await page.getByRole('button', { name: '搜索会话', exact: true }).click();
+      await page.getByRole('textbox', { name: '搜索会话内容' }).fill('测试');
+      assert.equal(await page.locator('.empty-title').textContent(), '没有找到相关会话');
+      await page.getByRole('button', { name: '清空搜索' }).click();
+      assert.equal(await page.locator('.empty-title').textContent(), '暂无归档会话');
+      await page.getByRole('button', { name: '关闭搜索' }).click();
+      await page.getByRole('button', { name: '首页', exact: true }).click();
+      assert.equal(await page.evaluate(() => lastNavigation.url), '/pages/home/index');
+      await page.getByRole('button', { name: '放松', exact: true }).click();
+      assert.equal(await page.evaluate(() => lastNavigation.url), '/pages/breathe/index');
+      console.log(width + 'px: empty state, zero counts, filters, search, icons, layout and navigation passed.');
     }
-    assert.deepEqual(errors,[]);
+    assert.deepEqual(errors, []);
   } finally { await browser.close(); }
 }
-main().catch((error) => { console.error(error); process.exitCode = 1; });
+main().catch(error => { console.error(error); process.exitCode = 1; });

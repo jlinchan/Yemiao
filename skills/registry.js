@@ -13,7 +13,8 @@ const DEFINITIONS = [
   require('./remember'),
   require('./bedtime-pledge'),
   require('./wake-me'),
-  require('./bedtime-guide')
+  require('./bedtime-guide'),
+  require('./breath-exercise')
 ];
 
 const DO_MARKER = '@@DO@@';

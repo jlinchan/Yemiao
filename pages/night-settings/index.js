@@ -29,7 +29,8 @@ const SKILL_HELP = {
   remember: '把重要的事交给夜喵记住',
   bedtime_pledge: '和夜喵约定就寝时间，到点来喊你',
   wake_me: '设定明早的温柔唤醒',
-  bedtime_guide: '睡不着时让夜喵带着你慢慢入睡'
+  bedtime_guide: '睡不着时让夜喵带着你慢慢入睡',
+  breath_exercise: '跟着光团做一次深呼吸，把节奏慢下来'
 };
 const options = {
   personality: ['温柔陪伴','安静倾听','鼓励提醒','简洁高效'],
@@ -37,7 +38,8 @@ const options = {
   companion: ['温柔陪伴','安静倾听','喜欢短时间练习'],
   question: ['今天过得怎么样？','什么让你难以放松？','想开始今晚的睡前练习吗？'],
   display: ['沉浸模式','简洁模式','完整模式'],
-  fontSize: ['小','标准','大']
+  fontSize: ['小','标准','大'],
+  chatMode: ['Reflex', 'Reframe', 'Reflect']
 };
 Page({
   onLoad() {},
@@ -92,7 +94,8 @@ Page({
   info(event) {
     const key = event.currentTarget.dataset.key;
     const content = {
-      model: ['默认对话模型','已接入校园 AI 创新应用大赛专用模型网关（deepseek-v4-flash），流式回复，支持技能调用与跨会话记忆。'],
+      model: ['默认对话模型','已接入校园 AI 创新应用大赛专用模型网关，按「对话模式」分三档：Reflex = deepseek-v4-flash-780k-local（大赛网关，速度优先）；Reframe = deepseek-v4-flash-0731；Reflect = glm-5.3-flash（思考更深、回复更专业）。安全提醒会自动使用 Reflect。'],
+      chatMode: ['对话模式','Reflex 回应最快，适合日常倾诉；Reframe 兼顾速度与质量，是推荐档；Reflect 思考更透、回复更专业，但等待更久。无论选哪档，涉及安全提醒时都会自动用最稳的 Reflect。'],
       api: ['自定义 API','大赛网关密钥配置在 services/secrets.js（不入库，模板见 secrets.example.js）。更换网关或模型只需改这个文件。'],
       reminder: ['提醒设置','尚未配置微信订阅消息模板与发送服务，当前不能开启真实通知。睡前提醒、早睡打卡提醒和感恩日记提醒将在接入后提供。'],
       login: ['微信账号','微信账号登录服务尚未接入，当前使用本地数据。'],

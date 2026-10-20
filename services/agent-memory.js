@@ -202,6 +202,71 @@ function renderMemoryMarkdown() {
   return lines.join('\n');
 }
 
+// 记忆档案的结构化分区（供记忆页做卡片排版）：与 renderMemoryMarkdown 同一数据源，
+// 条目模型 { main, sub?, when?, tag? }——main 主体、sub 副行、when 时间、tag 徽章（如「赞/踩」）。
+// memory.md 文字档案与 AI 检索链路均不受影响。
+function memorySections() {
+  const sections = [];
+  const sessions = Array.isArray(storage.getSessions()) ? storage.getSessions() : [];
+  const totalCycles = sessions.reduce((sum, item) => sum + (Number(item.cycles) || 0), 0);
+  if (totalCycles > 0) {
+    const summary = storage.getSevenDaySummary(Date.now(), sessions);
+    sections.push({ key: 'practice', title: '练习近况', items: [
+      { main: `累计完成 ${totalCycles} 轮呼吸` },
+      { main: `近 7 天练习 ${summary.completedSessions} 次（${summary.activeDays} 天有练习）`, sub: `放松 ${summary.outcomes.relieved} 次 · 差不多 ${summary.outcomes.same} 次 · 还紧绷 ${summary.outcomes.tense} 次` }
+    ] });
+  }
+  const sleepRecords = Array.isArray(storage.read(storage.KEYS.sleep, [])) ? storage.read(storage.KEYS.sleep, []) : [];
+  if (sleepRecords.length) {
+    sections.push({ key: 'sleep', title: '最近几晚的睡眠', items: sleepRecords.slice(0, 3).map((item) => {
+      const feeling = FEELING_LABELS[item.feeling] || item.feeling || '未记录';
+      return {
+        main: `${item.nightDate || item.date || '最近'}`,
+        sub: `${item.bedTime || '—'} 上床 · ${item.wakeTime || '—'} 起床 · ${item.duration || '时长未记录'}`,
+        tag: feeling
+      };
+    }) });
+  }
+  const journals = Array.isArray(storage.read(storage.KEYS.journal, [])) ? storage.read(storage.KEYS.journal, []) : [];
+  const gratitude = journals.filter((entry) => entry.kind !== 'dream').slice(0, 3);
+  const dreams = journals.filter((entry) => entry.kind === 'dream').slice(0, 3);
+  const journalRow = (entry) => {
+    const items = (Array.isArray(entry.items) ? entry.items : []).filter(Boolean);
+    return { main: items.join('；'), when: entry.date || '某天' };
+  };
+  if (gratitude.some((entry) => (entry.items || []).filter(Boolean).length)) {
+    sections.push({ key: 'gratitude', title: '最近的感恩日记', items: gratitude.map(journalRow).filter((row) => row.main) });
+  }
+  if (dreams.some((entry) => (entry.items || []).filter(Boolean).length)) {
+    sections.push({ key: 'dream', title: '最近记下的梦', items: dreams.map(journalRow).filter((row) => row.main) });
+  }
+  const memories = recall();
+  if (memories.length) {
+    sections.push({ key: 'chats', title: '我们聊过', items: memories.map((item) => ({ main: item.summary, when: formatWhen(item.at) })) });
+  }
+  const factList = facts();
+  if (factList.length) {
+    sections.push({ key: 'facts', title: '你让我记住的事', items: factList.map((item) => ({ main: item.text })) });
+  }
+  const parkedThoughts = agentThoughts.parked();
+  if (parkedThoughts.length) {
+    sections.push({ key: 'thoughts', title: '你寄存在我这的心事', items: parkedThoughts.map((item) => ({ main: item.text })) });
+  }
+  const reviews = agentReviews.list();
+  if (reviews.length) {
+    sections.push({ key: 'reviews', title: '夜喵收到的评价', items: reviews.slice(0, 8).map((item) => {
+      const label = agentReviews.valueLabel(item.value);
+      return {
+        main: item.quote ? `「${item.quote}」` : label,
+        sub: item.reason ? item.reason : '',
+        when: formatWhen(item.at),
+        tag: label
+      };
+    }) });
+  }
+  return sections.filter((section) => section.items.length);
+}
+
 // 把档案写入用户文件目录；失败静默（档案页每次打开都会重新渲染）。
 function writeMemoryFile() {
   if (typeof wx === 'undefined' || !wx.getFileSystemManager) return false;
@@ -222,10 +287,10 @@ function readMemoryFile() {
   }
 }
 
-// 仅清除对话记忆（摘要、记住的事、寄存的心事、留下的评价、对话现场）并重写档案；用户的练习/睡眠/日记记录不受影响。
+// 仅清除对话记忆（摘要、记住的事、寄存的心事、留下的评价、会话档案与当前对话）并重写档案；用户的练习/睡眠/日记记录不受影响。
 function clearConversationMemory() {
-  const chatStore = require('./agent-chat-store');
-  const cleared = storage.write(storage.KEYS.agentMemory, []) && storage.write(storage.KEYS.agentFacts, []) && storage.write(storage.KEYS.agentThoughts, []) && storage.write(storage.KEYS.agentReviews, []) && chatStore.clear();
+  const sessions = require('./agent-sessions');
+  const cleared = storage.write(storage.KEYS.agentMemory, []) && storage.write(storage.KEYS.agentFacts, []) && storage.write(storage.KEYS.agentThoughts, []) && storage.write(storage.KEYS.agentReviews, []) && sessions.clearAll();
   writeMemoryFile();
   return cleared;
 }
@@ -239,8 +304,9 @@ function buildTranscript(messages) {
     .join('\n');
 }
 
-// 对话结束后台摘要：done(summary|null) 可选；wx 不可用或请求失败时静默跳过。
-function summarizeConversation(messages, topic, done) {
+// 生成对话总结的公共请求：done(summary|null)；wx 不可用或请求失败时静默回调 null。
+// withMemory 为 true 时（对话收尾）把总结写入记忆；为 false 时（记录页补总结）只拿文本。
+function generateSummary(messages, topic, withMemory, done) {
   const transcript = buildTranscript(messages);
   const hasUserTurn = transcript.split('\n').some((line) => line.indexOf('用户：') === 0);
   if (!transcript || !hasUserTurn) {
@@ -256,7 +322,7 @@ function summarizeConversation(messages, topic, done) {
       url: secrets.modelGateway.baseUrl,
       method: 'POST',
       timeout: REQUEST_TIMEOUT_MS,
-      header: require('./agent-client').gatewayHeaders(),
+      header: Object.assign({}, require('./agent-client').gatewayHeaders(), { 'X-Context-Mode': 'history', 'X-Request-Purpose': 'summary' }),
       data: {
         model: secrets.modelGateway.model,
         stream: false,
@@ -271,7 +337,7 @@ function summarizeConversation(messages, topic, done) {
         const content = res && res.data && res.data.choices && res.data.choices[0]
           && res.data.choices[0].message && res.data.choices[0].message.content;
         const summary = typeof content === 'string' ? content.trim().slice(0, SUMMARY_MAX_CHARS) : '';
-        if (summary) {
+        if (summary && withMemory) {
           remember({ at: Date.now(), topic, summary });
           writeMemoryFile(); // 记忆更新后同步刷新档案
         }
@@ -286,4 +352,14 @@ function summarizeConversation(messages, topic, done) {
   }
 }
 
-module.exports = { recall, lastMemory, remember, facts, addFact, summarizeConversation, buildTranscript, formatWhen, estimateImportance, RELATED_TOPIC_COSINE, MEMORY_LIMIT, FACTS_LIMIT, renderMemoryMarkdown, writeMemoryFile, readMemoryFile, clearConversationMemory };
+// 对话结束后台摘要：done(summary|null) 可选；wx 不可用或请求失败时静默跳过。
+function summarizeConversation(messages, topic, done) {
+  generateSummary(messages, topic, true, done);
+}
+
+// 只生成总结文本、不写记忆（会话记录页对缺总结的归档条目补总结时用）。
+function requestSummary(messages, done) {
+  generateSummary(messages, '', false, done);
+}
+
+module.exports = { recall, lastMemory, remember, facts, addFact, summarizeConversation, requestSummary, buildTranscript, formatWhen, estimateImportance, RELATED_TOPIC_COSINE, MEMORY_LIMIT, FACTS_LIMIT, renderMemoryMarkdown, memorySections, writeMemoryFile, readMemoryFile, clearConversationMemory };

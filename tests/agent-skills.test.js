@@ -56,11 +56,18 @@ test('skill prompt section forbids pretending to act and includes the no-skill f
 test('stop_sound pauses playback through the app audio api', () => {
   withWx({}, () => {
     const calls = [];
-    global.getApp = () => ({ pauseSound: () => calls.push('pause') });
+    const app = { pauseSound: () => calls.push('pause'), globalData: { audioState: { sound: 'rain', playing: true } } };
+    global.getApp = () => app;
     const outcome = registry.run({ skill: 'stop_sound', args: {} });
     assert.equal(outcome.status, 'executed');
     assert.deepEqual(calls, ['pause']);
     assert.ok(outcome.message.indexOf('已停止') !== -1);
+    // 没在播放时如实回话，不假装停止
+    app.globalData.audioState.playing = false;
+    const idle = registry.executeNow({ skill: 'stop_sound', args: {} });
+    assert.equal(idle.status, 'executed');
+    assert.ok(idle.message.indexOf('没有在放') !== -1);
+    assert.deepEqual(calls, ['pause']);
     delete global.getApp;
     global.getApp = () => null;
     assert.equal(registry.executeNow({ skill: 'stop_sound', args: {} }).status, 'failed');
@@ -261,15 +268,11 @@ test('availability windows gate skills with a graceful redirect', () => {
     assert.ok(early.message.indexOf('清晨') !== -1);
     assert.equal(registry.run({ skill: 'morning_checkin', args: {} }, night).status, 'unavailable');
     assert.equal(registry.executeNow({ skill: 'morning_checkin', args: {} }, morning).status, 'executed');
-    // 入睡引导：夜里开放（含跨午夜），白天转向环境声或呼吸
-    const guided = registry.run({ skill: 'bedtime_guide', args: {} }, noon);
-    assert.equal(guided.status, 'unavailable');
-    assert.ok(guided.message.indexOf('环境声') !== -1);
+    // 入睡引导（2026-10-18 起）：不再设仅夜间时间窗，任何时段都直接执行、打开全屏引导页
+    assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, noon).status, 'executed');
     assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, night).status, 'executed');
     assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, new Date('2026-10-13T01:00:00').getTime()).status, 'executed');
-    // 边界：18:00 进入、06:00 退出
-    assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, new Date('2026-10-12T18:00:00').getTime()).status, 'executed');
-    assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, new Date('2026-10-13T06:00:00').getTime()).status, 'unavailable');
+    assert.equal(registry.executeNow({ skill: 'bedtime_guide', args: {} }, new Date('2026-10-13T06:00:00').getTime()).status, 'executed');
     // 无窗口的技能不受影响
     assert.equal(registry.run({ skill: 'bedtime_pledge', args: { time: '23:30' } }, noon).status, 'needConfirm');
   });
@@ -298,7 +301,8 @@ const SAMPLE_ARGS = {
   remember: { fact: '测试记忆' },
   bedtime_pledge: { time: '23:30' },
   wake_me: { time: '07:30' },
-  bedtime_guide: { script: 'night' }
+  bedtime_guide: { script: 'night' },
+  breath_exercise: { world: 'orb' }
 };
 
 test('every skill writes only inside its declared scope', () => {

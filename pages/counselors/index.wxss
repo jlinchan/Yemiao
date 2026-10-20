@@ -21,9 +21,9 @@ page { background: #021c1e; }
 .garden-image, .garden-fade { position: absolute; width: 100%; height: 100%; }
 .garden-image { object-fit: cover; }
 .garden-fade { background: linear-gradient(90deg, #021c1e, rgba(2,28,30,0) 40%, rgba(2,28,30,0) 83%, #021c1e); }
-.directory-heading { position: relative; display: flex; align-items: center; gap: 12rpx; padding-left: max(44px, 96rpx); }
-.directory-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: flex; flex: none; align-items: center; justify-content: center; width: 44px; min-width: 44px; max-width: 44px; height: 44px; }
-.back-icon { width: 18rpx; height: 32rpx; }
+.directory-heading { position: relative; display: flex; align-items: center; gap: 12rpx; padding-left: max(60px, 120rpx); }
+/* 返回键视觉走全局 .nav-back 规范（styles/nav-back.wxss），此处只锚定位置 */
+.directory-back { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); }
 .directory-title { font-size: 40rpx; font-weight: 700; line-height: 52rpx; white-space: nowrap; color: var(--sw-gold); }
 .directory-intro { position: relative; display: flex; align-items: center; justify-content: space-between; margin: 4rpx 42rpx 22rpx 96rpx; min-height: 40rpx; }
 .directory-subtitle { font-size: 21rpx; line-height: 30rpx; white-space: nowrap; }
@@ -42,7 +42,7 @@ page { background: #021c1e; }
 .counselor-description { display: block; margin: 7rpx 0 9rpx; font-size: 18rpx; line-height: 26rpx; color: var(--sw-secondary); }
 .counselor-bottom { display: grid; grid-template-columns: minmax(0, 1fr) 112rpx; align-items: center; gap: 6rpx; margin-top: auto; }
 .counselor-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 4rpx 8rpx; min-width: 0; }
-.counselor-tag { padding: 4rpx 10rpx; border: 1rpx solid var(--sw-gold-border); border-radius: 99rpx; color: var(--sw-gold); font-size: 16rpx; line-height: 22rpx; white-space: nowrap; }
+.counselor-tag { flex: none; padding: 4rpx 10rpx; border: 1rpx solid var(--sw-gold-border); border-radius: 99rpx; color: var(--sw-gold); font-size: 16rpx; line-height: 22rpx; white-space: nowrap; }
 .consult-button { display: flex; align-items: center; justify-content: center; justify-self: end; gap: 6rpx; width: 112rpx; min-width: 112rpx; max-width: 112rpx; min-height: 43rpx; padding: 0; border-radius: 99rpx; background: var(--sw-gold); color: var(--sw-ink); box-shadow: 0 0 12rpx rgba(255,226,154,.22); font-size: 18rpx; line-height: 25rpx; white-space: nowrap; }
 .consult-chevron { width: 14rpx; height: 24rpx; }
 .directory-empty { display: flex; align-items: center; flex-direction: column; gap: 20rpx; padding: 80rpx 24rpx; text-align: center; }

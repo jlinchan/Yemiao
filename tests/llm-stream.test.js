@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createUtf8Decoder, createSseParser, parseDelta } = require('../utils/llm-stream');
+const { createUtf8Decoder, createSseParser, parseDelta, parseReasoningDelta } = require('../utils/llm-stream');
 
 function sseEvent(content) {
   return `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`;
@@ -54,4 +54,12 @@ test('parseDelta extracts content, skips done and malformed payloads', () => {
   assert.equal(parseDelta('not json'), '');
   assert.equal(parseDelta(JSON.stringify({ choices: [{ delta: {} }] })), '');
   assert.equal(parseDelta(''), '');
+});
+
+test('parseReasoningDelta extracts the thinking-model reasoning stream', () => {
+  assert.equal(parseReasoningDelta(JSON.stringify({ choices: [{ delta: { reasoning_content: '先接住情绪' } }] })), '先接住情绪');
+  assert.equal(parseReasoningDelta(JSON.stringify({ choices: [{ delta: { content: '正文增量' } }] })), '', '正文 chunk 不误报 reasoning');
+  assert.equal(parseReasoningDelta('[DONE]'), '');
+  assert.equal(parseReasoningDelta('not json'), '');
+  assert.equal(parseReasoningDelta(JSON.stringify({ choices: [{ delta: {} }] })), '');
 });

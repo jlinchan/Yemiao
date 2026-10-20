@@ -1,6 +1,6 @@
 .part-page { height: 100vh; }
 .part-page .topbar { display: block; }
-.part-page .topbar .icon-button--back { position: absolute; left: 0; bottom: 8px; }
+.part-page .topbar .nav-back { position: absolute; left: 8px; bottom: 8px; }
 .part-heading { position: absolute; z-index: 15; left: 0; width: 100%; text-align: center; }
 .part-heading .page-title, .part-heading .page-copy { display: block; }
 .part-heading .page-title { font-size: 48rpx; }

@@ -5,7 +5,9 @@ page { background: #061719; }
 .ns-page button { margin: 0; padding: 0; background: transparent; color: inherit; font-size: 14px; line-height: 1.6; border-radius: 0; }
 .ns-top { position: relative; flex-shrink: 0; text-align: center; }
 .ns-top > text { position: absolute; bottom: 16px; left: 70px; right: 70px; font-size: 15px; letter-spacing: 2rpx; }
-.ns-page .ns-back { position: absolute; left: 16px; bottom: 4px; width: 44px; max-width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }.ns-back image { width: 20px; height: 20px; }
+/* 返回键视觉走全局 .nav-back 规范（styles/nav-back.wxss），此处只锚定位置；
+   选择器挂在 .ns-top 上，夜喵设置/消息/记忆三个子页共用 */
+.ns-top .nav-back { position: absolute; left: 8px; bottom: 4px; }
 .ns-scroll { flex: 1; height: 0; width: 100%; }.ns-content { padding: 24rpx 32rpx calc(48rpx + env(safe-area-inset-bottom)); }
 .ns-title { display: block; font-size: 24px; line-height: 1.5; margin: 8rpx 0 32rpx; font-family: SimSun, serif; animation: rise-in 280ms var(--ease-out) both; }
 
@@ -29,14 +31,14 @@ page { background: #061719; }
 .ns-memory-title { font-size: 16px; color: var(--night-gold); }
 .ns-memory .ns-row { border: 0; }
 .ns-memory-actions { display: flex; justify-content: space-between; gap: 16rpx; }
-.ns-memory-actions button { width: auto; max-width: 50%; min-height: 44px; }
+.ns-memory-actions button { display: flex; align-items: center; justify-content: center; width: auto; max-width: 50%; min-height: 44px; }
 .ns-page .ns-danger { color: var(--night-danger); }
 
 /* 底部抽屉：遮罩淡入 + 面板弹起 */
 .ns-overlay { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; background: rgba(2, 10, 12, .72); animation: veil-in 200ms var(--ease-out); }
 .ns-sheet { width: 100%; max-height: 82vh; padding-bottom: env(safe-area-inset-bottom); background: linear-gradient(180deg, #0f2325, #0b1f21); border-top: 1rpx solid rgba(232, 200, 135, .18); border-radius: 36rpx 36rpx 0 0; animation: sheet-up 320ms var(--ease-spring); }
 .ns-sheet-heading { display: flex; align-items: center; justify-content: space-between; padding: 26rpx 32rpx 20rpx; font-size: 17px; }
-.ns-sheet-heading button { width: 44px; max-width: 44px; height: 44px; }
+.ns-sheet-heading button { display: flex; align-items: center; justify-content: center; width: 44px; max-width: 44px; height: 44px; }
 .ns-sheet-heading image { width: 20px; height: 20px; }
 .ns-sheet-scroll { max-height: 62vh; }
 .ns-sheet-inner { padding: 0 32rpx 40rpx; }

@@ -1,5 +1,5 @@
-const storage = require('../services/storage');
-const { WORLDS, IMMERSIVE_WORLD_IDS } = require('./constants');
+const storage = require('../../services/storage');
+const { WORLDS, IMMERSIVE_WORLD_IDS } = require('../../utils/constants');
 
 function getWorld(worldId) {
   return WORLDS.find((item) => item.id === worldId) || null;

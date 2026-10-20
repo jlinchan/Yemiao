@@ -39,7 +39,9 @@ function createUtf8Decoder() {
 
   return {
     push(arrayBuffer) {
-      const view = new Uint8Array(arrayBuffer);
+      const view = ArrayBuffer.isView(arrayBuffer)
+        ? new Uint8Array(arrayBuffer.buffer, arrayBuffer.byteOffset, arrayBuffer.byteLength)
+        : new Uint8Array(arrayBuffer);
       const merged = pending.concat(Array.from(view));
       const result = decode(merged);
       pending = Array.from(result.rest);
@@ -52,23 +54,35 @@ function createUtf8Decoder() {
 // push(text) 可能收到半个事件，内部缓存直到事件完整。
 function createSseParser(onData) {
   let buffer = '';
+  let pendingCr = false;
+  function emit(event) {
+    const data = event.split('\n').filter((line) => line.indexOf('data:') === 0)
+      .map((line) => line.slice(5).replace(/^ /, ''));
+    if (data.length) onData(data.join('\n'));
+  }
+  function drain() {
+    let boundary;
+    while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+      const event = buffer.slice(0, boundary);
+      buffer = buffer.slice(boundary + 2);
+      emit(event);
+    }
+  }
   return {
     push(text) {
-      buffer += String(text).replace(/\r\n/g, '\n');
-      let boundary = buffer.indexOf('\n\n');
-      while (boundary !== -1) {
-        const event = buffer.slice(0, boundary);
-        buffer = buffer.slice(boundary + 2);
-        const lines = event.split('\n');
-        for (let i = 0; i < lines.length; i += 1) {
-          const line = lines[i];
-          if (line.indexOf('data:') === 0) {
-            const payload = line.slice(5).replace(/^ /, '');
-            onData(payload);
-          }
-        }
-        boundary = buffer.indexOf('\n\n');
+      const chunk = String(text);
+      for (let i = 0; i < chunk.length; i += 1) {
+        const ch = chunk[i];
+        if (pendingCr && ch === '\n') { pendingCr = false; continue; }
+        pendingCr = ch === '\r';
+        buffer += ch === '\r' ? '\n' : ch;
       }
+      drain();
+    },
+    finish() {
+      drain();
+      if (buffer.trim()) emit(buffer);
+      buffer = '';
     }
   };
 }
@@ -87,4 +101,39 @@ function parseDelta(payload) {
   }
 }
 
-module.exports = { createUtf8Decoder, createSseParser, parseDelta };
+// 思考模型（glm/qwen）的增量里另有 delta.reasoning_content——模型内部思考，
+// 先于正文流出。与 parseDelta 互补：content 进正文管线，reasoning 流式进思考面板。
+function parseReasoningDelta(payload) {
+  if (!payload || payload === '[DONE]') return '';
+  try {
+    const parsed = JSON.parse(payload);
+    const delta = parsed && parsed.choices && parsed.choices[0] && parsed.choices[0].delta;
+    return delta && typeof delta.reasoning_content === 'string' ? delta.reasoning_content : '';
+  } catch (error) {
+    return '';
+  }
+}
+
+// Dify 应用 API 的 SSE 载荷解析：与 OpenAI 格式不同，事件带 event 字段——
+// message / agent_message 事件的 answer 是增量文本；conversation_id 在事件里
+// 随发（首条 message 必带），需捕获后跨轮回带；ping / message_end 无增量。
+// 返回 { delta, conversationId, error }；非 Dify 载荷或解析失败返回 null。
+function parseDifyEvent(payload) {
+  if (!payload || payload === '[DONE]') return null;
+  try {
+    const parsed = JSON.parse(payload);
+    if (!parsed || typeof parsed !== 'object' || typeof parsed.event !== 'string') return null;
+    const result = { delta: '', conversationId: '', error: '' };
+    if ((parsed.event === 'message' || parsed.event === 'agent_message') && typeof parsed.answer === 'string') {
+      result.delta = parsed.answer;
+    }
+    if (typeof parsed.conversation_id === 'string') result.conversationId = parsed.conversation_id;
+    if (parsed.event === 'error') result.error = String(parsed.message || parsed.error || 'dify error');
+    if (!result.delta && !result.conversationId && !result.error) return null;
+    return result;
+  } catch (error) {
+    return null;
+  }
+}
+
+module.exports = { createUtf8Decoder, createSseParser, parseDelta, parseReasoningDelta, parseDifyEvent };

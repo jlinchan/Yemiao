@@ -1,6 +1,6 @@
 <view class="page-shell body-page">
   <view class="topbar" style="{{nav.topbarStyle}}">
-    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回呼吸首页"><view class="back-arrow"></view></button>
+    <button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回呼吸首页"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/></button>
   </view>
 
   <view class="body-intro">

@@ -1,17 +1,17 @@
 const content = require('../../data/nightcat-content');
 const selection = require('../../services/counselor-selection');
 const { getConversationUrl } = require('../../services/skill-conversation');
-const { openBookDetail } = require('../../services/book-navigation');
+const bookNavigation = require('../../services/book-navigation');
 const navigation = require('../../utils/navigation');
 const { getNavigationMetrics } = require('../../utils/layout');
 
-const BRAND_TOP_DESIGN_PX = 45; // 设计稿里「夜喵」距屏幕顶部的距离
+const BRAND_TOP_DESIGN_PX = 65; // 设计稿里「夜喵」距屏幕顶部的距离（2026-10-18 用户两轮反馈整体偏高，45 → 55 → 65）
 const MAX_MESSAGE_LENGTH = 200;
 
 Page({
   data: {
     assets: content.assets,
-    counselors: content.counselors,
+    counselors: content.featuredCounselors,
     books: content.books,
     suggestions: content.suggestions,
     selectedId: selection.DEFAULT_ID,
@@ -32,11 +32,11 @@ Page({
     this.setData({ selectedId: this.getHomeSelectedId() });
   },
 
-  // “全部咨询师”包含成长/睡眠角色，首页精选区只展示前三位；
+  // “全部陪伴者”包含成长/睡眠角色，首页精选区只展示前三位；
   // 返回首页时把非精选选择降级为默认卡片，避免出现无高亮状态。
   getHomeSelectedId() {
     const id = selection.read();
-    return content.counselors.some((item) => item.id === id) ? id : selection.DEFAULT_ID;
+    return content.featuredCounselors.some((item) => item.id === id) ? id : selection.DEFAULT_ID;
   },
 
   /**
@@ -70,7 +70,9 @@ Page({
     // 2026-10-17 深夜转场丝滑化：全局首页已是 pages/home，agent 只是普通对话页——
     // navigateTo 进入（旧注释「agent 是入口页需 reLaunch」已失效）：首页实例保留在栈底，
     // agent 顶部返回 navigateBack 原地回首页，零重建。
-    wx.navigateTo({ url: `/pages/agent/index?counselorId=${encodeURIComponent(counselor.id)}` });
+    // 引导语由夜喵（咨询师视角）作为开场白说出（entry=counselor），不再伪装成用户发言。
+    // counselor=<id> 必须带上：对话页据此切换头部/称谓并注入该陪伴者 persona（2026-10-19）。
+    wx.navigateTo({ url: `/pages/agent/index?entry=counselor&counselor=${id}&greeting=${encodeURIComponent(counselor.prompt)}` });
   },
 
   openCounselors() {
@@ -81,15 +83,15 @@ Page({
     wx.navigateTo({ url: '/pages/skills/index' });
   },
 
-  openBookDetail(event) {
-    openBookDetail(event.currentTarget.dataset.id, this);
-  },
-
   openSkill(event) {
     const id = event.currentTarget.dataset.id;
     if (!content.findBook(id)) return;
     const url = getConversationUrl(id);
     if (url) navigation.navigateOnce(this, `chat:${id}`, url);
+  },
+
+  openBookDetail(event) {
+    bookNavigation.openBookDetail(event.currentTarget.dataset.id, this);
   },
 
   openTopic(event) {

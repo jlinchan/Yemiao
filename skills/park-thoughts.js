@@ -17,7 +17,7 @@ module.exports = {
     const input = args || {};
     if (input.action === 'recall') {
       const list = thoughts.take();
-      if (!list.length) return { ok: true, message: '我这没有寄存的心事。是不是都已经放下了？' };
+      if (!list.length) return { ok: true, message: '我这没有寄存的心事，是不是都已经放下了？想寄存一件的话，直接说「寄存一件事：……」就好，我会替你保管到明天。' };
       const shown = list.map((item, index) => `${index + 1}）${item.text}`).join('；');
       return { ok: true, message: `你寄存在我这的心事，原样还给你：${shown}。想现在聊一件，还是先放着？` };
     }

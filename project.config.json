@@ -3,6 +3,10 @@
   "packOptions": {
     "ignore": [
       {
+        "value": "server",
+        "type": "folder"
+      },
+      {
         "value": "ihcheck",
         "type": "folder"
       },
@@ -122,6 +126,7 @@
     "include": []
   },
   "setting": {
+    "urlCheck": false,
     "useCompilerPlugins": false,
     "es6": true,
     "postcss": true,

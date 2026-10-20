@@ -1,12 +1,12 @@
 <view class="page-shell cat-page topic-page">
   <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}">
-    <button class="icon-button icon-button--back" bindtap="goBack" aria-label="返回">
-      <view class="back-arrow"></view>
+    <button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回">
+      <image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/>
     </button>
     <text class="topbar-label">今晚的话题</text>
   </view>
 
-  <scroll-view class="topic-scroll" scroll-y wx:if="{{topic}}">
+  <scroll-view class="cat-scroll" style="top: {{nav.navigationBottom}}px;" scroll-y wx:if="{{topic}}">
     <view class="cat-body">
       <text class="topic-title">{{topic.title}}</text>
       <text class="topic-intro">{{topic.intro}}</text>

@@ -10,8 +10,8 @@
 
   <block wx:else>
     <view class="topbar guide-topbar" style="{{nav.topbarStyle}}">
-      <button class="icon-button icon-button--back" bindtap="endSession" hover-class="is-pressed" aria-label="结束引导，回到对话">
-        <image class="guide-back-icon" src="{{icons.back}}" mode="aspectFit"/>
+      <button class="nav-back" bindtap="endSession" hover-class="is-pressed" aria-label="结束引导，回到对话">
+        <image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/>
       </button>
       <text class="topbar-label">{{title}}</text>
     </view>

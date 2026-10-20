@@ -6,7 +6,10 @@ const root = path.resolve(__dirname, '..');
 const port = Number(process.env.NIGHTCAT_PREVIEW_PORT || 4180);
 const PAGES = {
   '/': 'agent',
-  '/topic': 'topic',
+  '/home': 'home',
+  '/counselors': 'counselors',
+  '/skills': 'skills',
+  '/book-detail': 'book-detail',
   '/guide': 'guide',
   '/record': 'record',
   '/night-settings': 'night-settings',
@@ -14,11 +17,7 @@ const PAGES = {
   '/sound': 'sound',
   '/journal': 'journal',
   '/sleep': 'sleep',
-  '/focus': 'focus',
-  '/home': 'home',
-  '/counselors': 'counselors',
-  '/skills': 'skills',
-  '/book-detail': 'book-detail'
+  '/focus': 'focus'
 };
 function read(file) { return fs.readFileSync(path.join(root, file), 'utf8'); }
 // 内联 wxss 的 @import（浏览器不支持小程序相对路径与 rpx 变换）。

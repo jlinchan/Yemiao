@@ -25,6 +25,7 @@ const FEATURE_GLYPHS = {
   recall: glyph('<path d="M5.8 9.2h9.4a3.9 3.9 0 1 1 0 7.8H9.6"/><path d="M9.2 5.8 5.8 9.2l3.4 3.4"/>'),
   guide: glyph('<path d="M13.9 4.4a7.2 7.2 0 1 0 5.8 11.3 8.5 8.5 0 0 1-5.8-11.3Z"/>'),
   journal: glyph('<rect x="6.2" y="4.6" width="11.6" height="14.8" rx="2.6"/><path d="M9.4 9.2h5.2"/><path d="M9.4 12.6h5.2"/><path d="M9.4 16h3"/>'),
+  breath: glyph('<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.8"/>'),
   dream: glyph('<path d="M15.2 4.6a6.8 6.8 0 1 0 4.3 8.6 7.9 7.9 0 0 1-4.3-8.6Z"/><path d="M6 8.4l.5 1.3 1.3.5-1.3.5L6 12l-.5-1.3-1.3-.5 1.3-.5Z"/>')
 };
 
@@ -37,6 +38,11 @@ const BOOKS = [
 
 // 功能目录：skill 字段用于按设置过滤（off 的不进 prompt）；action 决定点按后的去向。
 const FEATURES = [
+  {
+    id: 'breath', title: '一起做次深呼吸', tag: '放松练习', desc: '跟着光团的节奏，一分钟把呼吸慢下来。',
+    icon: 'breath', actionLabel: '开始练习', hint: '用户说紧张、心跳快、想做深呼吸或放松一下时',
+    skill: 'breath_exercise', action: { type: 'skill', call: { skill: 'breath_exercise', args: { world: 'orb' } } }
+  },
   {
     id: 'park', title: '取回寄存的心事', tag: '助眠练习', desc: '把上次交给我保管的心事拿回来，聊开或继续放下。',
     icon: 'recall', actionLabel: '去取回', hint: '用户提过寄存心事、或说心里有件事放不下时',

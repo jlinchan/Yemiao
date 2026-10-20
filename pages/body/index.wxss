@@ -1,6 +1,6 @@
 .body-page { height: 100vh; background: linear-gradient(180deg, #07191b, #041112 78%); }
 .body-page .topbar { display: block; }
-.body-page .topbar .icon-button--back { position: absolute; left: 0; bottom: 8px; }
+.body-page .topbar .nav-back { position: absolute; left: 8px; bottom: 8px; }
 .body-intro { padding: 34rpx 48rpx 0; text-align: center; }
 .body-intro .page-title, .body-intro .page-copy { display: block; }
 .body-scan-stage { position: absolute; top: 270rpx; right: 0; bottom: calc(env(safe-area-inset-bottom) + 30rpx); left: 0; width: 100%; }

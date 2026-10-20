@@ -1,13 +1,30 @@
 @import '../night-settings/index.wxss';
 
 .nm-page { display: flex; flex-direction: column; width: 100%; height: 100vh; background: linear-gradient(180deg, #020e14 0%, #061719 52%, #0a2422 100%); color: var(--night-text); }
-/* night-settings 的 .ns-page 作用域不覆盖本页，返回键样式在这里补齐 */
-.nm-page .ns-back { position: absolute; left: 16px; bottom: 4px; width: 44px; max-width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-.nm-page .ns-back image { width: 20px; height: 20px; }
+/* 返回键已统一到全局 .nav-back 规范，锚定规则见 night-settings 的 .ns-top .nav-back */
 .nm-scroll { flex: 1; min-height: 0; }
 .nm-content { padding: 24rpx 32rpx 48rpx; }
 .nm-card { padding: 28rpx 30rpx; border: 1rpx solid var(--night-hairline); border-radius: 28rpx; background: var(--night-panel); box-shadow: 0 10rpx 28rpx rgba(0, 0, 0, .16); animation: rise-in 280ms var(--ease-out) both; }
-.nm-text { display: block; color: #c9d8d3; font-size: 14px; line-height: 2; white-space: pre-wrap; word-break: break-all; }
-.nm-empty { margin-top: 24rpx; color: var(--night-muted); font-size: 13px; text-align: center; animation: fade-in 240ms ease-out 80ms both; }
-.nm-clear { margin-top: 32rpx; min-height: max(88rpx, 44px); color: var(--night-danger); font-size: 14px; line-height: 1.6; background: rgba(201, 138, 138, .08); border: 1rpx solid rgba(201, 138, 138, .32); border-radius: 999rpx; animation: rise-in 280ms var(--ease-out) 70ms both; }
+.nm-intro { margin-bottom: 20rpx; }
+.nm-intro-text { color: var(--night-faint); font-size: 11.5px; line-height: 1.7; }
+.nm-section { margin-bottom: 24rpx; }
+.nm-section-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18rpx; margin-bottom: 6rpx; border-bottom: 1rpx solid var(--night-hairline); }
+.nm-section-title { color: var(--night-gold); font-size: 14.5px; font-weight: 600; letter-spacing: 1rpx; }
+.nm-section-count { min-width: 40rpx; padding: 2rpx 12rpx; border: 1rpx solid var(--night-hairline); border-radius: 999rpx; color: var(--night-muted); font-size: 10.5px; text-align: center; }
+.nm-row { display: flex; gap: 16rpx; padding: 14rpx 0; }
+.nm-row + .nm-row { border-top: 1rpx solid rgba(168, 193, 183, .08); }
+.nm-row-dot { flex: none; width: 10rpx; height: 10rpx; margin-top: 14rpx; border-radius: 50%; background: rgba(232, 200, 135, .55); }
+.nm-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6rpx; }
+.nm-row-main { display: flex; align-items: flex-start; gap: 12rpx; }
+.nm-row-text { flex: 1; min-width: 0; color: #dce6e1; font-size: 13.5px; line-height: 1.75; word-break: break-all; }
+.nm-row-tag { flex: none; padding: 2rpx 14rpx; border-radius: 999rpx; color: var(--night-gold); background: rgba(232, 200, 135, .12); font-size: 10.5px; line-height: 1.7; }
+.nm-row-tag.is-neg { color: #d8a8a8; background: rgba(201, 138, 138, .14); }
+.nm-row-tag.is-pos { color: var(--night-gold); background: rgba(232, 200, 135, .12); }
+.nm-row-sub { color: var(--night-muted); font-size: 12px; line-height: 1.7; word-break: break-all; }
+.nm-row-when { color: var(--night-faint); font-size: 10.5px; line-height: 1.6; }
+.nm-empty-card { display: flex; flex-direction: column; align-items: center; gap: 12rpx; padding: 56rpx 30rpx; text-align: center; }
+.nm-empty-title { color: var(--night-text); font-size: 15px; font-weight: 600; }
+.nm-empty-sub { color: var(--night-muted); font-size: 12.5px; line-height: 1.8; }
+.nm-updated { margin: 4rpx 0 8rpx; color: var(--night-faint); font-size: 10.5px; text-align: center; }
+.nm-clear { display: flex; align-items: center; justify-content: center; margin-top: 32rpx; min-height: max(88rpx, 44px); color: var(--night-danger); font-size: 14px; line-height: 1.6; background: rgba(201, 138, 138, .08); border: 1rpx solid rgba(201, 138, 138, .32); border-radius: 999rpx; animation: rise-in 280ms var(--ease-out) 70ms both; }
 .nm-safe-bottom { height: env(safe-area-inset-bottom); }

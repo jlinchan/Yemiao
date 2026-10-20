@@ -16,7 +16,6 @@ function star(color, transform) {
 }
 
 const THUMB = '<path d="M7.2 10.4v9.4H5a1.9 1.9 0 0 1-1.9-1.9v-5.6A1.9 1.9 0 0 1 5 10.4h2.2Z"/><path d="M7.2 10.4 10.7 4a2.3 2.3 0 0 1 2.2 2.9l-.8 3h6.2a2 2 0 0 1 2 2.5l-1.4 5.9a2 2 0 0 1-2 1.5H7.2"/>';
-
 const like = uri(MUTED, THUMB + star(MUTED));
 const likeActive = uri(GOLD, THUMB + star(GOLD));
 const dislike = uri(MUTED, `<g transform="rotate(180 12 12)">${THUMB}</g>` + star(MUTED));
@@ -28,7 +27,8 @@ const stop = uri(GOLD, '<rect x="7.2" y="7.2" width="9.6" height="9.6" rx="3"/>'
 
 // —— 对话页功能图标 ——
 const plus = uri(MUTED, '<path d="M12 5.6v12.8"/><path d="M5.6 12h12.8"/>' + star(MUTED));
-const back = uri(MUTED, '<path d="M14.8 5.9 8.7 12l6.1 6.1"/>' + star(MUTED));
+// 返回键图标统一走全局规范资产（styles/nav-back.wxss）：chevron 右箭头旋转 180° 即左箭头
+const back = '/assets/agent/icons/chevron-right-muted.png';
 const tune = uri(MUTED, '<circle cx="12" cy="12" r="3"/><path d="M12 4.8v2.4M12 16.8v2.4M4.8 12h2.4M16.8 12h2.4M6.9 6.9l1.7 1.7M15.4 15.4l1.7 1.7M17.1 6.9l-1.7 1.7M8.6 15.4l-1.7 1.7"/>' + star(MUTED));
 // 发送：垂直箭头 + 对角双星尘（左上大、右下小），起飞感取自「星屑随行」。
 const sendArrow = (color) => uri(color, '<path d="M12 19.4V7.2"/><path d="M7 12.2l5-5 5 5"/>' + star(color, 'translate(-5.8 3.55) scale(.62)') + star(color, 'translate(3.5 14.9) scale(.72)'));
@@ -79,6 +79,8 @@ const speakerSlash =
 const speakerOn = uri(MUTED, speakerBody + speakerWaves + star(MUTED));
 const speakerOff = uri(MUTED, speakerBody + speakerSlash + star(MUTED));
 const speakerActive = uri(GOLD, speakerBody + speakerWaves + star(GOLD));
+// 消息操作栏「播放」：灰色喇叭，播放中切金色 speakerActive。
+const speaker = uri(MUTED, speakerBody + speakerWaves + star(MUTED));
 
 // —— 内容频道（听书 / 电台）——
 const listen = uri(MUTED, '<path d="M5.2 15.6v-3.2a6.8 6.8 0 0 1 13.6 0v3.2"/><rect x="4" y="14.4" width="3.6" height="5.4" rx="1.8"/><rect x="16.4" y="14.4" width="3.6" height="5.4" rx="1.8"/>' + star(MUTED));
@@ -96,6 +98,7 @@ module.exports = {
   regenerate: regenerate(MUTED),
   stop,
   plus,
+  speaker,
   back,
   tune,
   sendInk,

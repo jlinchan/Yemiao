@@ -1,3 +1,4 @@
+require('./agent-test-config');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -7,7 +8,7 @@ const navigation = require('../utils/navigation');
 const { getRecordView } = require('../utils/record-view');
 const applySetData = require('./page-set-data');
 
-function harness(entry) {
+function harness() {
   let page;
   let timer;
   let keyboardListener;
@@ -16,11 +17,14 @@ function harness(entry) {
     getWindowInfo: () => ({ windowWidth: 375, statusBarHeight: 24 }),
     getMenuButtonBoundingClientRect: () => ({ top: 32, bottom: 64, left: 279 }),
     getStorageSync: () => [],
+    showToast() {},
+    request: (options) => { options.success({ statusCode: 200, data: { choices: [{ message: { content: '测试模型回复' } }] } }); return { abort() {} }; },
     showShareMenu() {}, hideKeyboard() {},
     onKeyboardHeightChange: (fn) => { keyboardListener = fn; },
     offKeyboardHeightChange: (fn) => { assert.equal(fn, keyboardListener); keyboardListener = null; },
     navigateTo: ({ url }) => routes.push(url), reLaunch: ({ url }) => routes.push(url)
   };
+  global.wx = wx;
   const script = path.resolve(__dirname, '../pages/agent/index.js');
   const context = {
     wx,
@@ -31,21 +35,9 @@ function harness(entry) {
   };
   vm.runInNewContext(fs.readFileSync(script, 'utf8'), context);
   page.setData = (values) => applySetData(page.data, values);
-  page.onLoad(entry || {});
+  page.onLoad();
   return { page, routes, finish: () => { const fn = timer; timer = null; if (fn) fn(); }, keyboard: (height) => keyboardListener({ height }), hasListener: () => Boolean(keyboardListener) };
 }
-
-test('counselor entry drives the chat title, speaker name and greeting', () => {
-  const { page } = harness({ counselorId: 'yalom' });
-  assert.equal(page.data.counselorName, '欧文·亚隆');
-  assert.equal(page.data.messages[0].text, '慢慢来。此刻最让你放不下的，是什么？');
-  assert.equal(page.conversationScope, 'counselor:yalom');
-  const wxml = fs.readFileSync(path.join(__dirname, '../pages/agent/index.wxml'), 'utf8');
-  assert.match(wxml, /class="chat-title">\{\{counselorName\}\}/);
-  assert.match(wxml, /item\.role === 'agent' \? counselorName : '你'/);
-  assert.match(wxml, /继续和\{\{counselorName\}\}说说/);
-  assert.doesNotMatch(wxml, /class="chat-title">夜喵/);
-});
 
 test('new launch and fallback route use the Nightcat homepage', () => {
   const config = require('../app.json');

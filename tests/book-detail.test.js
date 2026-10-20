@@ -107,8 +107,10 @@ test('book detail actions carry book and skill ids into existing pages', (t) => 
   page.startBookConversation();
   const bookRoute = new URL(routes.at(-1), 'https://miniapp.local');
   assert.equal(bookRoute.pathname, '/pages/agent/index');
+  assert.equal(bookRoute.searchParams.get('entry'), 'book');
   assert.equal(bookRoute.searchParams.get('bookId'), 'cbti-insomnia-perlis');
   assert.equal(bookRoute.searchParams.get('skillId'), null);
+  assert.match(bookRoute.searchParams.get('greeting'), /失眠的认知行为治疗/);
 
   const beforeBookRepeat = routes.length;
   page.startBookConversation();
@@ -117,9 +119,10 @@ test('book detail actions carry book and skill ids into existing pages', (t) => 
   page.openSkill({ currentTarget: { dataset: { id: 'cbti-stimulus-control' } } });
   const route = new URL(routes.at(-1), 'https://miniapp.local');
   assert.equal(route.pathname, '/pages/agent/index');
+  assert.equal(route.searchParams.get('entry'), 'book');
   assert.equal(route.searchParams.get('bookId'), 'cbti-insomnia-perlis');
   assert.equal(route.searchParams.get('skillId'), 'cbti-stimulus-control');
-  assert.match(route.searchParams.get('prompt'), /刺激控制/);
+  assert.match(route.searchParams.get('greeting'), /刺激控制/);
   const beforeSkillRepeat = routes.length;
   page.openSkill({ currentTarget: { dataset: { id: 'cbti-stimulus-control' } } });
   assert.equal(routes.length, beforeSkillRepeat, '技能按钮快速双击只能跳转一次');
@@ -134,8 +137,10 @@ test('book and skill context resolves real per-book knowledge', () => {
     assert.match(context.prompt, new RegExp(book.title));
     for (const skill of skillDirectory.listSkills(book.id)) {
       const skillUrl = new URL(getBookConversationUrl(book.id, skill.id), 'https://miniapp.local');
+      assert.equal(skillUrl.searchParams.get('entry'), 'book');
       assert.equal(skillUrl.searchParams.get('bookId'), book.id);
       assert.equal(skillUrl.searchParams.get('skillId'), skill.id);
+      assert.ok(skillUrl.searchParams.get('greeting').length > 0);
       const resolved = bookContext.resolve(book.id, skill.id);
       assert.equal(resolved.skill.id, skill.id);
       assert.ok(resolved.prompt.includes(skill.concept));
@@ -169,6 +174,7 @@ test('book-detail route and cover tap isolation are wired in the page files', ()
   const skillsWxml = fs.readFileSync(path.join(__dirname, '../pages/skills/index.wxml'), 'utf8');
   const detailWxml = fs.readFileSync(path.join(__dirname, '../pages/book-detail/index.wxml'), 'utf8');
   const detailJs = fs.readFileSync(path.join(__dirname, '../pages/book-detail/index.js'), 'utf8');
+  const agentJs = fs.readFileSync(path.join(__dirname, '../pages/agent/index.js'), 'utf8');
   assert.match(homeWxml, /catchtap="openBookDetail"/);
   assert.match(homeWxml, /\{\{item\.shortDescription\}\}/);
   assert.match(skillsWxml, /catchtap="openBookDetail"/);
@@ -178,4 +184,6 @@ test('book-detail route and cover tap isolation are wired in the page files', ()
   assert.doesNotMatch(detailWxml, /书中技能正在整理|查看书中技能/);
   assert.doesNotMatch(detailJs, /pages\/skills\/index\?bookId/);
   assert.doesNotMatch(skillsWxml, /book-focus|focusedBook/);
+  assert.match(agentJs, /bookContext\.resolve\(entry\.bookId, entry\.skillId\)/);
+  assert.match(agentJs, /entryBookContext\.prompt/);
 });

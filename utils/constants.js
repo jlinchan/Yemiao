@@ -63,6 +63,7 @@ const DEFAULT_SETTINGS = {
     park_thoughts: 'auto',
     morning_checkin: 'auto',
     bedtime_guide: 'auto',
+    breath_exercise: 'auto',
     bedtime_pledge: 'confirm',
     wake_me: 'confirm',
     remember: 'confirm'

@@ -4,8 +4,8 @@ const navigation = require('../../utils/navigation');
 const { PHASES, createInitialState, transition } = require('../../utils/breath-machine');
 const { getBreathView } = require('../../utils/breath-view');
 const { getNavigationMetrics } = require('../../utils/layout');
-const { fitStarfield } = require('../../utils/starfield-layout');
-const worldNavigation = require('../../utils/world-navigation');
+const { fitStarfield } = require('./starfield-layout');
+const worldNavigation = require('./world-navigation');
 
 const CYCLE_OPTIONS = [
   { value: 0, name: '自由呼吸' },

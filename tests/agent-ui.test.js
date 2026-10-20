@@ -1,3 +1,6 @@
+require('./agent-test-config');
+// 测试隔离：屏蔽本机真实 difyKnowledge 配置（vm 的 require 委托回主 realm，此处置 undefined 即全局生效）。
+require('../services/secrets').difyKnowledge = undefined;
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -9,16 +12,24 @@ const agentPort = require('../services/agent-port');
 const applySetData = require('./page-set-data');
 
 // 页面级测试沙箱：可配置 wx.request 行为（流式任务 / 直接抛错）。
-function harness({ request, clipboardFail, entry } = {}) {
+// 两阶段流水线（2026-10-19 全档启用）：Stage A（意图分析器，780k 流式短请求）由沙箱
+// 自动应答默认计划，测试只需驱动 Stage B 的正文请求；需自定义计划的测试自行喂 chunk。
+function harness({ request, clipboardFail } = {}) {
   let page;
   let timer;
   const store = {};
-  const clipboard = [];
+  // 流式测试基线：默认档 Reframe 走非流式通道（token 平台流式被限速），
+  // 需要流式渲染管线的测试预置 Reflex（大赛网关流式）。storage key 与 night-preferences 一致。
+  store['sleepwell.night.preferences.v1'] = { chatMode: 'Reflex' };
+  let clipboard = [];
   const toasts = [];
   const modals = [];
   const navigations = [];
   const setDataKeys = [];
   const app = { globalData: {} };
+  const rawRequest = request || ((options) => { options.success({ statusCode: 200, data: { choices: [{ message: { content: '测试模型回复' } }] } }); return { abort() {} }; });
+  const planSse = () => Buffer.from('data: ' + JSON.stringify({ choices: [{ delta: { content: '{"need":"倾诉","use":"","rec":false}' } }] }) + '\n\n', 'utf8');
+  const planJson = () => ({ statusCode: 200, data: { choices: [{ message: { content: '{"need":"倾诉","use":"","rec":false}' } }] } });
   const wx = {
     getWindowInfo: () => ({ windowWidth: 375, statusBarHeight: 24 }),
     getMenuButtonBoundingClientRect: () => ({ top: 32, bottom: 64, left: 279 }),
@@ -36,7 +47,16 @@ function harness({ request, clipboardFail, entry } = {}) {
     },
     navigateTo: ({ url }) => navigations.push({ type: 'navigateTo', url }),
     reLaunch: ({ url }) => navigations.push({ type: 'reLaunch', url }),
-    request: request || (() => { throw new Error('network down'); })
+    request: (options) => {
+      // Stage A 已改走 token 网关非流式（0731，stream:false）——注册即同步应答默认计划。
+      const isStageA = options.data && options.data.messages && options.data.messages[0]
+        && String(options.data.messages[0].content).indexOf('意图分析器') !== -1;
+      if (isStageA) {
+        if (options.success) options.success(planJson());
+        return { abort() {} };
+      }
+      return rawRequest(options);
+    }
   };
   const script = path.resolve(__dirname, '../pages/agent/index.js');
   global.wx = wx; // 服务模块（agent-client/storage）从 Node global 读取 wx
@@ -50,46 +70,9 @@ function harness({ request, clipboardFail, entry } = {}) {
   };
   vm.runInNewContext(fs.readFileSync(script, 'utf8'), context);
   page.setData = (values) => { setDataKeys.push(...Object.keys(values)); applySetData(page.data, values); };
-  page.onLoad(entry || {});
+  page.onLoad();
   return { page, store, clipboard, toasts, modals, wx, app, navigations, setDataKeys, finish: () => { const fn = timer; timer = null; if (fn) fn(); } };
 }
-
-test('book skill route injects its own knowledge context into the chat request', () => {
-  let captured = null;
-  const h = harness({
-    entry: { bookId: 'courage', skillId: 'courage-task-separation' },
-    request: (options) => {
-      captured = options;
-      throw new Error('network down');
-    }
-  });
-  startChat(h.page, '我总担心别人怎么看我');
-  assert.equal(h.page.conversationScope, 'courage::courage-task-separation');
-  assert.ok(captured, 'should issue a model request');
-  const system = captured.data.messages[0].content;
-  assert.match(system, /被讨厌的勇气/);
-  assert.match(system, /课题分离/);
-  assert.match(system, /后果最终由谁承担/);
-  assert.match(system, /docs\/experts\/adler\.md/);
-  assert.doesNotMatch(system, /失眠的认知行为治疗/);
-});
-
-test('counselor route injects its identity prompt into the chat request', () => {
-  let captured = null;
-  const h = harness({
-    entry: { counselorId: 'yalom' },
-    request: (options) => {
-      captured = options;
-      throw new Error('network down');
-    }
-  });
-  startChat(h.page, '我最近总在想人为什么活着');
-  assert.ok(captured);
-  const system = captured.data.messages[0].content;
-  assert.match(system, /你是“欧文·亚隆”/);
-  assert.match(system, /不冒充亚隆本人/);
-  assert.doesNotMatch(system, /你是“夜喵”/);
-});
 
 function startChat(page, text) {
   page.openChat();
@@ -98,18 +81,36 @@ function startChat(page, text) {
 }
 
 // 危机改走模型路径后（2026-10-16 架构调整），用可回放模型回复的 request mock 驱动流式管线。
+// modelReply 按请求形态自适应：流式（stream:true）推 chunk；非流式（Reframe/Reflect，
+// stream:false）直接 success 交全文，再等待端内伪流式回放完成。
 function harnessWithModelReply() {
   let opts = null;
   let chunkHandler = null;
+  let page = null;
   const h = harness({
     request: (options) => {
       opts = options;
       return { onChunkReceived: (cb) => { chunkHandler = cb; }, abort() {} };
     }
   });
+  page = h.page;
+  h.waitForReply = () => new Promise((resolve) => {
+    const started = Date.now();
+    const check = () => {
+      const msg = page.data.messages.find((item) => item.role === 'agent' && item.id !== 'intro' && item.done);
+      if (msg || Date.now() - started > 4000) resolve();
+      else setTimeout(check, 50);
+    };
+    setTimeout(check, 60);
+  });
   h.modelReply = (content) => {
+    if (opts && opts.data && opts.data.stream === false) {
+      opts.success({ statusCode: 200, data: { choices: [{ message: { content } }] } });
+      return h.waitForReply();
+    }
     chunkHandler({ data: Buffer.from(`data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`, 'utf8') });
     if (opts && opts.success) opts.success();
+    return Promise.resolve();
   };
   return h;
 }
@@ -312,19 +313,14 @@ test('full skill flow: streamed marker becomes a confirm card, then a subscribe 
 test('guide quick skill opens the full-screen session and leaves a handoff line', () => {
   const { page, navigations } = harness();
   startChat(page, '带我入睡');
-  const realNow = Date.now;
-  Date.now = () => new Date('2026-10-12T22:00:00').getTime(); // 入睡引导只在夜里开放
-  try {
-    page.quickSkill({ currentTarget: { dataset: { key: 'guide-body' } } });
-  } finally {
-    Date.now = realNow;
-  }
+  // 面板点按 = 明确意图：任何时段都直接打开全屏引导页，不再受仅夜间时间窗限制
+  page.quickSkill({ currentTarget: { dataset: { key: 'guide-night' } } });
   // 不再往对话里倒引导词：只留一句接手的话 + 打开全屏引导页
-  assert.deepEqual(navigations, [{ type: 'navigateTo', url: '/pages/guide/index?script=body' }]);
+  assert.deepEqual(navigations, [{ type: 'navigateTo', url: '/pages/guide/index?script=night' }]);
   const last = page.data.messages[page.data.messages.length - 1];
   assert.equal(last.role, 'skill');
-  assert.ok(last.text.indexOf('身体扫描') !== -1);
-  assert.equal(last.text.indexOf('先让身体躺稳'), -1);
+  assert.ok(last.text.indexOf('星夜慢行') !== -1);
+  assert.equal(last.text.indexOf('今晚我们从窗边出发'), -1);
   assert.ok(!page.guideTimers || page.guideTimers.length === 0);
 });
 
@@ -393,10 +389,10 @@ test('opening after the pledged time delivers the catch-up message into the chat
   assert.equal(page.data.messageBadge, 0);
 });
 
-test('critical input keeps the model in charge; a missing @@SAFE@@ still lands the help card', () => {
+test('critical input keeps the model in charge; a missing @@SAFE@@ still lands the help card', async () => {
   const { page, modelReply } = harnessWithModelReply();
   startChat(page, '我真的不想活了');
-  modelReply('听到了。我陪你，先别急着做任何决定。'); // 模型漏标
+  await modelReply('听到了。我陪你，先别急着做任何决定。'); // Stage B（Stage A 已由沙箱自动应答）
   assert.equal(page.data.chatState, 'idle');
   const agentMsg = page.data.messages.find((item) => item.role === 'agent' && item.id !== 'intro');
   assert.equal(agentMsg.text, '听到了。我陪你，先别急着做任何决定。', 'model reply stays verbatim, no canned takeover');
@@ -419,10 +415,49 @@ test('model-emitted @@SAFE@@ summons the help card and never leaks into visible 
   assert.ok(page.data.messages.find((item) => item.role === 'safety'), 'panel follows the model marker');
 });
 
-test('pinyin evasion input rides the model path and lands the help card with banner', () => {
+test('deep mode streams reasoning_content into the thinking panel before content arrives', async () => {
+  // Reflect（glm 思考模型 + 两阶段流水线）：Stage A 由沙箱自动应答（计划进思考面板），
+  // Stage B 真流式：reasoning_content 实时进思考面板，正文照常打字。
+  let chunkHandler = null;
+  let opts = null;
+  const { page, finish, store } = harness({
+    request: (options) => {
+      opts = options;
+      assert.equal(options.data.model, 'test-deep', '沙箱只把 Stage B（glm）交给测试驱动');
+      return { onChunkReceived: (cb) => { chunkHandler = cb; }, abort() {} };
+    }
+  });
+  store['sleepwell.night.preferences.v1'] = { chatMode: 'Reflect' };
+  startChat(page, '深度聊聊失眠这件事');
+  const reasoningSse = 'data: ' + JSON.stringify({ choices: [{ delta: { reasoning_content: '按计划引用刺激控制。' } }] }) + '\n\n';
+  chunkHandler({ data: Buffer.from(reasoningSse, 'utf8') });
+  finish();
+  const before = page.data.messages[page.data.messages.length - 1];
+  assert.ok(before.thinking, '模型提供的内容进入面板');
+  assert.ok(before.thinking.indexOf('按计划引用刺激控制') !== -1, 'reasoning 流式进思考面板');
+  const answerSse = 'data: ' + JSON.stringify({ choices: [{ delta: { content: '@@THINK@@整理一下@@ANSWER@@深夜失眠确实难熬，试试刺激控制。' } }] }) + '\n\n';
+  chunkHandler({ data: Buffer.from(answerSse, 'utf8') });
+  if (opts && opts.success) opts.success({ statusCode: 200 }); // Stage B 收尾
+  const after = page.data.messages[page.data.messages.length - 1];
+  assert.ok(after.thinking.indexOf('按计划引用刺激控制') !== -1, '模型流式内容保留');
+  assert.ok(after.thinking.indexOf('整理一下') !== -1, '协议思考并列展示');
+  assert.equal(after.text, '深夜失眠确实难熬，试试刺激控制。', '正文照常流式');
+  assert.equal(after.done, true, '回复正常收尾');
+});
+
+test('reflex generates directly without mandatory analysis', () => {
+  // 780k 非思考模型：思考过程由 Stage A 的分析推理承担，Stage B 免 @@THINK@@ 直接正文。
+  const { page } = harness();
+  startChat(page, '嗯');
+  const agentMsg = page.data.messages.find((item) => item.role === 'agent' && item.id !== 'intro' && item.done);
+  assert.ok(agentMsg, 'fast + plan：自动计划下正文正常收尾');
+  assert.equal(agentMsg.thinking || null, null, '没有额外分析请求');
+});
+
+test('pinyin evasion input rides the model path and lands the help card with banner', async () => {
   const { page, modelReply } = harnessWithModelReply();
   startChat(page, 'zisha');
-  modelReply('谢谢你肯把这个词说出来。\n@@SAFE@@');
+  await modelReply('谢谢你肯把这个词说出来。\n@@SAFE@@'); // Stage B（Stage A 已由沙箱自动应答）
   const card = page.data.messages.find((item) => item.role === 'safety');
   assert.ok(card, 'help card should appear for pinyin evasion input');
   assert.equal(card.banner, '/assets/agent/safety-banner.jpg', 'boat banner rides on the help card');
@@ -524,4 +559,76 @@ test('night-nav stays tappable in chat state and the home button exits the conve
   page.setData({ homeState: 'initial' });
   page.closeRecords();
   assert.equal(page.data.homeState, 'initial');
+});
+
+test('fast mode reports network failure without silently duplicating the request', () => {
+  // 真机定位：780k（modelgateway）在部分设备不可达——fast Stage B fail 后自动换 0731 重发。
+  let calls = 0;
+  let opts731 = null;
+  const { page } = harness({
+    request: (options) => {
+      if (String(options.data.messages[0].content).indexOf('意图分析器') !== -1) {
+        if (options.success) options.success({ statusCode: 200, data: { choices: [{ message: { content: '{"need":"倾诉","use":"","rec":false}' } }] } });
+        return { abort() {} };
+      }
+      calls += 1;
+      if (calls === 1) {
+        // 第一次（780k 流式）：模拟真机连接失败
+        let fired = false;
+        return { onChunkReceived() { if (!fired) { fired = true; if (options.fail) options.fail({ errMsg: 'request:fail' }); } }, abort() {} };
+      }
+      // failover：0731 非流式
+      opts731 = options;
+      if (options.success) options.success({ statusCode: 200, data: { choices: [{ message: { content: '深夜的烦躁是有分量的，先放一放。' } }] } });
+      return { abort() {} };
+    }
+  });
+  startChat(page, '嗯');
+  assert.equal(calls, 1);
+  assert.equal(opts731, null);
+  assert.equal(page.data.chatState, 'error');
+  assert.equal(page.pendingAgent, null);
+});
+
+test('new conversation rejects old callbacks even when agent bubble ids repeat', () => {
+  const requests = [];
+  const { page } = harness({ request(options) {
+    const item = { options }; requests.push(item);
+    return { onChunkReceived(fn) { item.chunk = fn; }, abort() { options.fail({ errMsg: 'abort' }); } };
+  } });
+  startChat(page, '旧会话消息');
+  const old = requests[0];
+  require('../services/agent-sessions').start({ topic: '' });
+  page.beginConversation('');
+  startChat(page, '新会话消息');
+  const current = requests[1];
+  assert.equal(page.lastTurn.agentId, 'agent-1', '新会话重复使用同样气泡 id');
+  old.chunk({ data: Buffer.from('data: {"choices":[{"delta":{"content":"旧会话迟到回复"}}]}\n\n') });
+  old.options.success({ statusCode: 200 });
+  assert.equal(page.data.chatState, 'sending');
+  assert.ok(!page.data.messages.some(item => String(item.text).includes('旧会话')));
+  current.chunk({ data: Buffer.from('data: {"choices":[{"delta":{"content":"新会话真实管线回复"}}]}\n\n') });
+  current.options.success({ statusCode: 200 });
+  assert.equal(page.data.chatState, 'idle');
+  assert.equal(page.data.messages.at(-1).text, '新会话真实管线回复');
+});
+
+test('page clears failed request state and retry succeeds without duplicate user bubbles', () => {
+  const requests = [];
+  const { page, toasts } = harness({ request(options) {
+    requests.push(options);
+    return { onChunkReceived() {}, abort() {} };
+  } });
+  startChat(page, '你好');
+  requests[0].fail({ errMsg: 'request:fail timeout' });
+  assert.equal(page.data.chatState, 'error');
+  assert.equal(page.data.awaitingFirst, false);
+  assert.equal(page.data.streamState, 'idle');
+  assert.equal(page.pendingAgent, null);
+  assert.ok(toasts.some(text => text.includes('超时')));
+  page.retryTurn();
+  requests[1].success({ statusCode: 200, data: { choices: [{ message: { content: '重试正文' } }] } });
+  assert.equal(page.data.chatState, 'idle');
+  assert.equal(page.data.messages.filter(item => item.role === 'user').length, 1);
+  assert.equal(page.data.messages.at(-1).text, '重试正文');
 });

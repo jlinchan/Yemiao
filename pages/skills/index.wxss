@@ -1,4 +1,7 @@
 page { background:#021c1e; }
+.skills-page .skills-heading { padding-left: max(60px, 120rpx); margin-bottom: 16rpx; }
+.skills-heading .skills-back { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); }
+.skills-heading .skills-title { min-width: 0; font-size: 34rpx; line-height: 46rpx; }
 .skills-page .skills-heading { padding-left: max(44px, 90rpx); margin-bottom: 16rpx; }
 .skills-heading .skills-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); flex: none; width: 44px; min-width: 44px; max-width: 44px; height: 44px; }
 .skills-heading .skills-title { min-width: 0; font-size: 34rpx; line-height: 46rpx; }

@@ -212,3 +212,37 @@ test('writeMemoryFile and clearConversationMemory degrade without a filesystem',
     assert.equal(agentReviews.list().length, 0);
   });
 });
+
+test('memorySections builds card sections from the same data as the markdown archive', () => {
+  const now = Date.now();
+  withStorage({
+    [storage.KEYS.sessions]: [{ id: 'a', startedAt: now, cycles: 6, completed: true, outcome: 'relieved' }],
+    [storage.KEYS.sleep]: [{ nightDate: '10月11日', bedTime: '23:30', wakeTime: '07:10', duration: '7小时40分', feeling: 4 }],
+    [storage.KEYS.journal]: [{ date: '10月11日', items: ['晚霞很好看'] }],
+    [storage.KEYS.agentMemory]: [{ at: now, topic: 'exam', summary: '因考试焦虑而失眠' }],
+    [storage.KEYS.agentThoughts]: [{ at: now, text: '明天的组会汇报' }],
+    [storage.KEYS.agentFacts]: [{ id: 'f1', text: '我对猫毛过敏', at: now, importance: 0.8, topic: '' }],
+    [storage.KEYS.agentReviews]: [{ messageId: 'm1', value: 'dislike', quote: '早点休息哦', reason: '有点说教', at: now }]
+  }, () => {
+    const sections = agentMemory.memorySections();
+    const keys = sections.map((s) => s.key);
+    assert.deepEqual(keys, ['practice', 'sleep', 'gratitude', 'chats', 'facts', 'thoughts', 'reviews'], '分区顺序与档案一致');
+    const factsRow = sections.find((s) => s.key === 'facts').items[0];
+    assert.equal(factsRow.main, '我对猫毛过敏');
+    const sleep = sections.find((s) => s.key === 'sleep').items[0];
+    assert.equal(sleep.main, '10月11日');
+    assert.ok(sleep.sub.indexOf('23:30 上床') !== -1);
+    assert.equal(sleep.tag, '不错', '心情以徽章呈现');
+    const review = sections.find((s) => s.key === 'reviews').items[0];
+    assert.equal(review.main, '「早点休息哦」');
+    assert.equal(review.tag, '踩');
+    assert.equal(review.sub, '有点说教');
+    assert.ok(sections.every((s) => s.items.length > 0), '分区不为空才进列表');
+  });
+});
+
+test('memorySections returns empty array when nothing is recorded', () => {
+  withStorage({}, () => {
+    assert.deepEqual(agentMemory.memorySections(), []);
+  });
+});

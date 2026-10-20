@@ -1,9 +1,30 @@
 <view class="nm-page">
-  <view class="ns-top" style="{{nav.topbarStyle}}"><button class="ns-back" hover-class="is-pressed" bindtap="goBack" aria-label="返回设置"><image src="/assets/agent/icons/arrow-left-muted.png"/></button><text>夜喵的记忆</text></view>
+  <view class="ns-top" style="{{nav.topbarStyle}}"><button class="nav-back" hover-class="is-pressed" bindtap="goBack" aria-label="返回设置"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png"/></button><text>夜喵的记忆</text></view>
   <scroll-view class="nm-scroll" scroll-y>
     <view class="nm-content">
-      <view class="nm-card"><text class="nm-text" user-select>{{content}}</text></view>
-      <view wx:if="{{empty}}" class="nm-empty"><text>夜喵还没有记住什么。</text></view>
+      <view class="nm-intro"><text class="nm-intro-text">这些内容只保存在你的手机上，随时可以查看或清除。</text></view>
+      <view wx:for="{{sections}}" wx:key="key" class="nm-card nm-section" wx:for-item="section">
+        <view class="nm-section-head">
+          <text class="nm-section-title">{{section.title}}</text>
+          <text class="nm-section-count">{{section.items.length}}</text>
+        </view>
+        <view wx:for="{{section.items}}" wx:for-item="row" wx:for-index="rowIndex" wx:key="rowIndex" class="nm-row">
+          <view class="nm-row-dot"></view>
+          <view class="nm-row-body">
+            <view class="nm-row-main">
+              <text class="nm-row-text" user-select>{{row.main}}</text>
+              <text wx:if="{{row.tag}}" class="nm-row-tag {{row.tag === '踩' ? 'is-neg' : row.tag === '赞' ? 'is-pos' : ''}}">{{row.tag}}</text>
+            </view>
+            <text wx:if="{{row.sub}}" class="nm-row-sub" user-select>{{row.sub}}</text>
+            <text wx:if="{{row.when}}" class="nm-row-when">{{row.when}}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{empty}}" class="nm-card nm-empty-card">
+        <text class="nm-empty-title">夜喵还没有记住什么</text>
+        <text class="nm-empty-sub">多聊几次、多做几次练习，这里会慢慢丰富起来。</text>
+      </view>
+      <view wx:if="{{updatedAt && !empty}}" class="nm-updated">档案更新于 {{updatedAt}}</view>
       <button class="nm-clear" bindtap="clearMemory" hover-class="is-pressed">清除聊天记忆</button>
       <view class="nm-safe-bottom"></view>
     </view>

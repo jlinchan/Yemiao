@@ -1,4 +1,4 @@
-// 技能：停止环境声播放。
+// 技能：停止环境声播放。按全局音频的真实状态回话——没在放就如实说，不假装执行。
 module.exports = {
   name: 'stop_sound',
   label: '停止播放',
@@ -11,6 +11,8 @@ module.exports = {
   execute() {
     const app = typeof getApp === 'function' ? getApp() : null;
     if (!app || typeof app.pauseSound !== 'function') return { ok: false, message: '当前环境暂时无法控制声音' };
+    const state = app.globalData && app.globalData.audioState ? app.globalData.audioState : null;
+    if (!state || !state.playing) return { ok: true, message: '现在没有在放声音，房间本来就很安静。' };
     try {
       app.pauseSound();
     } catch (error) {

@@ -468,12 +468,12 @@ async function main() {
     // 二级页扫查：无脚本错误、无横向溢出、资源完整、主要触控 ≥ 44px、关键状态截图。
     const secondary = [
       ['/record', 'preview-record.png', '.record-nav button, .month-arrow, .month-current, .all-button, .journal-entry, .journal-row, .more-button, .edit-button'],
-      ['/night-settings', 'preview-night-settings.png', '.ns-row, .ns-back, .ns-memory-actions button'],
-      ['/night-memory', 'preview-night-memory.png', '.nm-clear, .ns-back'],
-      ['/sound', 'preview-sound.png', '.sound-row, .play-button, .timer-options button, .icon-button--back'],
-      ['/journal', 'preview-journal.png', '.primary-button, .icon-button--back'],
-      ['/sleep', 'preview-sleep.png', '.feeling-button, .primary-button, .time-field, .icon-button--back'],
-      ['/focus', 'preview-focus.png', '.primary-button, .icon-button--back, .focus-back']
+      ['/night-settings', 'preview-night-settings.png', '.ns-row, .nav-back, .ns-memory-actions button'],
+      ['/night-memory', 'preview-night-memory.png', '.nm-clear, .nav-back'],
+      ['/sound', 'preview-sound.png', '.sound-row, .play-button, .timer-options button, .nav-back'],
+      ['/journal', 'preview-journal.png', '.primary-button, .nav-back'],
+      ['/sleep', 'preview-sleep.png', '.feeling-button, .primary-button, .time-field, .nav-back'],
+      ['/focus', 'preview-focus.png', '.primary-button, .focus-back']
     ];
     const secondaryReports = {};
     for (const [route, shot, tapSelector] of secondary) {

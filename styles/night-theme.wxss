@@ -22,13 +22,8 @@ page {
   transform: scale(.97);
 }
 
-/* 返回键 80rpx（40px）在小屏低于 44px 触控标准，二级页统一放大 */
-.page-shell .icon-button--back {
-  width: max(88rpx, 44px);
-  min-width: max(88rpx, 44px);
-  max-width: max(88rpx, 44px);
-  height: max(88rpx, 44px);
-}
+/* 返回键已于 2026-10-18 统一到全局 .nav-back 规范（app.wxss 引入
+   styles/nav-back.wxss，基础尺寸即 max(88rpx, 44px)），旧兜底规则移除 */
 
 @keyframes rise-in { from { opacity: 0; transform: translateY(14rpx); } }
 @keyframes fade-in { from { opacity: 0; } }

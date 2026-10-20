@@ -17,6 +17,9 @@
 function stripForSpeech(rawText) {
   return String(rawText || '')
     .replace(/@@\w+@@/g, ' ')
+    .replace(/<think[\s\S]*?<\/think>/gi, ' ')
+    .replace(/<\/?think[^>]*>/gi, ' ')
+    .replace(/<\s*\|[^|>]{0,64}\|\s*>/g, ' ')
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/https?:\/\/\S+/g, ' ')
     .replace(/[*_`#>~]+/g, '')

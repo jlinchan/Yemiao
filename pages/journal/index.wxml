@@ -1,5 +1,5 @@
 <view class="page-shell journal-page">
-  <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}"><button class="icon-button icon-button--back" bindtap="goBack" hover-class="is-pressed" aria-label="返回呼吸首页"><view class="back-arrow"></view></button><text class="topbar-label">感恩日记</text></view>
+  <view class="topbar secondary-topbar" style="{{nav.topbarStyle}}"><button class="nav-back" bindtap="goBack" hover-class="is-pressed" aria-label="返回呼吸首页"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/></button><text class="topbar-label">感恩日记</text></view>
   <view class="journal-content safe-bottom">
     <text class="page-title">今天，有什么值得留下？</text>
     <text class="page-copy">一件小事也可以，最多写三条。</text>

@@ -13,11 +13,8 @@ module.exports = {
   ].join('\n'),
   needsResult: false,
   writes: [],
-  // 可用性边界：入睡引导只在夜里开放，白天转向环境声或呼吸练习。
-  availability: {
-    windows: [{ from: 18, to: 6 }],
-    outside: '入睡引导留给夜里。现在想放松的话，可以让我播一段环境声，或者去做一次呼吸练习。'
-  },
+  // 可用性边界（2026-10-18 调整）：面板点按 = 明确意图，任何时段都直接打开全屏引导页，
+  // 不再限制只在夜里开放——此前白天点按只回一句文本，功能等于摆设。
   execute(args) {
     const key = SCRIPTS[args && args.script] ? args.script : 'night';
     const script = SCRIPTS[key];

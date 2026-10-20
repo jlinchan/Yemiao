@@ -1,3 +1,5 @@
+@import "./styles/nav-back.wxss";
+
 page {
   --bg-deep: #061719;
   --bg-mid: #081d20;
@@ -62,14 +64,12 @@ button::after {
   display: block;
 }
 
-.topbar .icon-button--back {
+/* topbar 页返回键：只负责锚定（规范视觉见 styles/nav-back.wxss），
+   左缘统一距屏幕 8px，bottom:8px 与底部对齐的标题行垂直居中 */
+.topbar .nav-back {
   position: absolute;
-  left: 0;
+  left: 8px;
   bottom: 8px;
-  width: 44px;
-  min-width: 44px;
-  max-width: 44px;
-  height: 44px;
 }
 
 .secondary-topbar .topbar-label {
@@ -97,37 +97,6 @@ button::after {
   padding: 0 22rpx;
   gap: 10rpx;
   border-radius: 40rpx;
-}
-
-.icon-button--back {
-  width: 80rpx;
-  min-width: 80rpx;
-  padding: 0;
-  border-radius: 50%;
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.065);
-  font-size: 24rpx;
-}
-
-.back-arrow {
-  position: relative;
-  width: 18rpx;
-  height: 18rpx;
-  border-left: 3rpx solid currentColor;
-  border-bottom: 3rpx solid currentColor;
-  transform: rotate(45deg);
-}
-
-.back-arrow::after {
-  content: '';
-  position: absolute;
-  left: -2rpx;
-  bottom: -2rpx;
-  width: 24rpx;
-  height: 3rpx;
-  transform-origin: left center;
-  transform: rotate(-45deg);
-  background: currentColor;
 }
 
 .close-icon {
