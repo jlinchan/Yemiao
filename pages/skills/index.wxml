@@ -3,7 +3,7 @@
     <view class="skills-header" style="padding-top: {{nav.statusBarHeight}}px;">
       <view class="moon-garden" aria-hidden="true"><view class="moon"></view><view class="star star-a"></view><view class="star star-b"></view><view class="star star-c"></view></view>
       <view class="skills-heading" style="min-height: {{nav.navigationHeight}}px; padding-right: {{nav.rightInset}}px;">
-        <button class="skills-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed">‹</button>
+        <button class="skills-back nav-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed"><image class="nav-back-icon" src="/assets/agent/icons/chevron-right-muted.png" mode="aspectFit"/></button>
         <text class="skills-title">书中技能</text>
       </view>
       <view class="skills-category-bar">

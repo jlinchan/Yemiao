@@ -1,0 +1,52 @@
+page { background: #021c1e; }
+.counselors-page {
+  --sw-background: #021c1e;
+  --sw-surface: #052527;
+  --sw-border: #234043;
+  --sw-gold: #ffe29a;
+  --sw-gold-border: #9d8b51;
+  --sw-text: #f6f6ed;
+  --sw-secondary: #b8cacb;
+  --sw-ink: #0b170f;
+  --sw-pill-border: #647b7c;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--sw-background);
+  color: var(--sw-text);
+  font-family: 'Noto Sans SC', 'Source Han Sans SC', -apple-system, 'Microsoft YaHei', sans-serif;
+}
+.counselors-scroll { height: 100%; }
+.directory-header { position: relative; padding-bottom: 24rpx; }
+.garden-art { position: absolute; top: 26rpx; right: 70rpx; width: 249rpx; height: 165rpx; pointer-events: none; }
+.garden-image, .garden-fade { position: absolute; width: 100%; height: 100%; }
+.garden-image { object-fit: cover; }
+.garden-fade { background: linear-gradient(90deg, #021c1e, rgba(2,28,30,0) 40%, rgba(2,28,30,0) 83%, #021c1e); }
+.directory-heading { position: relative; display: flex; align-items: center; gap: 12rpx; padding-left: max(60px, 120rpx); }
+/* 返回键视觉走全局 .nav-back 规范（styles/nav-back.wxss），此处只锚定位置 */
+.directory-back { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); }
+.directory-title { font-size: 40rpx; font-weight: 700; line-height: 52rpx; white-space: nowrap; color: var(--sw-gold); }
+.directory-intro { position: relative; display: flex; align-items: center; justify-content: space-between; margin: 4rpx 42rpx 22rpx 96rpx; min-height: 40rpx; }
+.directory-subtitle { font-size: 21rpx; line-height: 30rpx; white-space: nowrap; }
+.directory-categories { position: relative; display: flex; gap: 12rpx; margin: 0 28rpx; }
+.category-pill { display: flex; align-items: center; justify-content: center; flex: 1; min-width: 0; height: 46rpx; border: 1rpx solid var(--sw-pill-border); border-radius: 17rpx; color: var(--sw-text); font-size: 19rpx; line-height: 28rpx; white-space: nowrap; }
+.category-pill:first-child { flex: .88; }
+.category-pill.is-selected { color: var(--sw-ink); border-color: var(--sw-gold); background: var(--sw-gold); box-shadow: 0 0 15rpx rgba(255,226,154,.22); }
+.counselor-list { display: flex; flex-direction: column; gap: 13rpx; margin: 0 26rpx; }
+.counselor-card { display: flex; align-items: stretch; gap: 19rpx; padding: 14rpx; border: 1rpx solid var(--sw-border); border-radius: 23rpx; background: var(--sw-surface); }
+.counselor-portrait { position: relative; flex: none; width: 170rpx; min-height: 182rpx; border-radius: 17rpx; overflow: hidden; }
+.counselor-avatar { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 17rpx; object-fit: cover; }
+.counselor-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.counselor-topline { display: flex; justify-content: space-between; align-items: center; gap: 6rpx; min-height: 34rpx; }
+.counselor-name { flex: none; font-size: 27rpx; font-weight: 700; line-height: 34rpx; }
+.counselor-desc { display: block; margin-top: 3rpx; font-size: 21rpx; line-height: 29rpx; }
+.counselor-description { display: block; margin: 7rpx 0 9rpx; font-size: 18rpx; line-height: 26rpx; color: var(--sw-secondary); }
+.counselor-bottom { display: grid; grid-template-columns: minmax(0, 1fr) 112rpx; align-items: center; gap: 6rpx; margin-top: auto; }
+.counselor-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 4rpx 8rpx; min-width: 0; }
+.counselor-tag { flex: none; padding: 4rpx 10rpx; border: 1rpx solid var(--sw-gold-border); border-radius: 99rpx; color: var(--sw-gold); font-size: 16rpx; line-height: 22rpx; white-space: nowrap; }
+.consult-button { display: flex; align-items: center; justify-content: center; justify-self: end; gap: 6rpx; width: 112rpx; min-width: 112rpx; max-width: 112rpx; min-height: 43rpx; padding: 0; border-radius: 99rpx; background: var(--sw-gold); color: var(--sw-ink); box-shadow: 0 0 12rpx rgba(255,226,154,.22); font-size: 18rpx; line-height: 25rpx; white-space: nowrap; }
+.consult-chevron { width: 14rpx; height: 24rpx; }
+.directory-empty { display: flex; align-items: center; flex-direction: column; gap: 20rpx; padding: 80rpx 24rpx; text-align: center; }
+.empty-title { color: var(--sw-text); font-size: 28rpx; line-height: 40rpx; }
+.empty-description { color: var(--sw-secondary); font-size: 24rpx; line-height: 36rpx; }
+.empty-reset { padding: 18rpx 28rpx; border-radius: 99rpx; background: var(--sw-gold); color: var(--sw-ink); font-size: 26rpx; }
+.is-pressed { opacity: .72; }

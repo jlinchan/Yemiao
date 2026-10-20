@@ -1,0 +1,13 @@
+@import './motion.wxss';
+
+:host { display: block; width: 100%; height: 100%; }
+.lavender-scene { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background: #060619; pointer-events: none; }
+.lavender-frame { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.lavender-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.lavender-anchor { position: absolute; transform-origin: 50% 50%; animation-duration: 16s; animation-timing-function: linear; animation-iteration-count: infinite; }
+.lavender-sprig { position: absolute; left: 25%; top: 0; width: 50%; height: 50%; }
+.lavender-mist { position: absolute; left: 5%; width: 90%; height: 12%; border-radius: 50%; background: radial-gradient(ellipse, rgba(128,102,194,.05), rgba(128,102,194,0) 70%); animation: lavenderMist 16s linear infinite; }
+.lavender-mist--back { top: 55%; }
+.lavender-mist--front { top: 59%; animation-direction: reverse; }
+.lavender-paused { animation-play-state: paused; }
+@keyframes lavenderMist { 0%, 100% { transform: translateX(0); opacity: .75; } 25% { transform: translateX(2%); opacity: .85; } 50% { transform: translateX(0); opacity: .75; } 75% { transform: translateX(-2%); opacity: .65; } }

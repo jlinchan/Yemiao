@@ -1,0 +1,131 @@
+@import "../../styles/nightcat.wxss";
+
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 20rpx;
+}
+
+.detail-cover {
+  flex: none;
+  width: 192rpx;
+  height: 192rpx;
+  border-radius: 26rpx;
+}
+
+.detail-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 22rpx;
+  padding-top: 4rpx;
+}
+
+.detail-title {
+  color: var(--cat-title);
+  font-size: 38rpx;
+  font-weight: 700;
+  line-height: 52rpx;
+}
+
+.detail-desc {
+  margin-top: 8rpx;
+  color: var(--cat-sub);
+  font-size: 25rpx;
+  line-height: 36rpx;
+}
+
+.detail-meta {
+  margin-top: 10rpx;
+  color: rgba(159, 179, 172, 0.8);
+  font-size: 23rpx;
+  line-height: 34rpx;
+}
+
+.detail-summary {
+  display: block;
+  margin-top: 36rpx;
+  color: var(--cat-text);
+  font-size: 29rpx;
+  line-height: 46rpx;
+}
+
+.step-heading {
+  display: block;
+  margin-top: 34rpx;
+  color: var(--cat-title);
+  font-size: 27rpx;
+  font-weight: 600;
+  line-height: 38rpx;
+}
+
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 16rpx;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx;
+  border: 1rpx solid var(--cat-card-line);
+  border-radius: 24rpx;
+  background: var(--cat-card);
+}
+
+.step-index {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 26rpx;
+  background: rgba(240, 223, 160, 0.14);
+  color: var(--cat-gold-soft);
+  font-size: 25rpx;
+  font-weight: 600;
+}
+
+.step-copy {
+  display: flex;
+  flex-direction: column;
+  margin-left: 22rpx;
+}
+
+.step-title {
+  color: var(--cat-title);
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 42rpx;
+}
+
+.step-detail {
+  margin-top: 8rpx;
+  color: var(--cat-sub);
+  font-size: 25rpx;
+  line-height: 40rpx;
+}
+
+.detail-cta {
+  margin-top: 36rpx;
+}
+
+.detail-cta + .detail-cta {
+  margin-top: 20rpx;
+}
+
+.skill-detail-page .cat-note,
+.cat-page .cat-note {
+  margin-top: 34rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx);
+  font-size: 23rpx;
+  line-height: 36rpx;
+}
+
+.is-pressed {
+  opacity: 0.72;
+}

@@ -1,0 +1,43 @@
+<view class="whale-page whale-page--{{scenePhase}} {{running ? 'is-running' : 'is-idle'}}" aria-hidden="true">
+  <view class="whale-art-stage">
+    <image class="whale-water" src="/pages/breathe/assets/whale/deep-sea-water-base-hd.jpg" mode="scaleToFill"></image>
+    <view class="whale-swimmer-frame">
+      <view class="whale-phase-motion" style="{{scene.photoStyle}}">
+        <view class="whale-swim-cycle">
+          <image class="whale-whale" src="/pages/breathe/assets/whale/whale-full-glow.png" mode="scaleToFill"></image>
+          <image class="whale-fin" src="/pages/breathe/assets/whale/whale-fin-glow.png" mode="scaleToFill"></image>
+          <image class="whale-tail" src="/pages/breathe/assets/whale/whale-tail-glow.png" mode="scaleToFill"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="whale-water-caustics" style="{{scene.rippleStyle}}"></view>
+  <view class="whale-atmosphere"></view>
+
+  <view class="whale-rays" style="{{scene.raysStyle}}">
+    <view wx:for="{{beams}}" wx:key="id" class="whale-beam" style="left:{{item.left}}%;width:{{item.width}}%;">
+      <view class="whale-beam__body" style="transform:rotate({{item.rotate}}deg);animation-duration:{{item.duration}}s;animation-delay:{{item.delay}}s;"></view>
+    </view>
+  </view>
+
+  <view class="whale-ripples" style="{{scene.rippleStyle}}">
+    <view
+      wx:for="{{ripples}}"
+      wx:key="id"
+      class="whale-ripple"
+      style="width:{{item.width}}rpx;height:{{item.height}}rpx;animation-delay:{{item.delay}}s;"
+    ></view>
+  </view>
+
+  <view class="whale-bubbles" style="{{scene.bubbleStyle}}">
+    <view
+      wx:for="{{bubbles}}"
+      wx:key="id"
+      class="whale-bubble whale-bubble--{{item.variant}}"
+      style="left:{{item.left}}%;top:{{item.top}}%;width:{{item.size}}rpx;height:{{item.size}}rpx;animation-delay:{{item.delay}}s;animation-duration:{{item.duration}}s;"
+    ></view>
+  </view>
+
+  <view class="whale-vignette"></view>
+</view>

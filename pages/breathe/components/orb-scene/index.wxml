@@ -1,0 +1,11 @@
+<view class="orb-scene orb-scene--{{scenePhase}} {{running ? 'is-running' : 'is-idle'}}" aria-hidden="true">
+  <view class="orb-grid"></view>
+  <view class="orb-vignette"></view>
+  <view class="orb-stage">
+    <view class="orb-scale" style="{{orbStyle}}">
+      <view class="orb-rotor" style="{{rotationStyle}}">
+        <image class="orb-image" src="/pages/breathe/assets/breath-orb/orb-source.png" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+</view>

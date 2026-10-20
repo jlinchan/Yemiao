@@ -1,0 +1,59 @@
+/* ============================================================
+   夜喵 · 全局返回键设计规范 v1（2026-10-18）
+   ------------------------------------------------------------
+   收敛背景（此前 4 套并存）：
+   · 陪伴者 counselors：PNG 窄箭头 + 透明底，按压仅 opacity
+   · 书中技能 skills：文本字形「‹」+ 透明底，尺寸规则两套冲突
+   · topbar 页（书中对话/话题/日记等）：CSS 画箭头 + 白玻璃圆底，
+     部分页面漏配 hover-class，无按压反馈
+   · 夜喵对话 agent：夜色玻璃圆钮 + 金线描边 + 弹簧按压（最完整）
+   统一以 agent 顶栏按钮为基准，全站返回键对齐以下规范。
+
+   用法：
+   <button class="nav-back" hover-class="is-pressed"
+           bindtap="goBack" aria-label="返回…">
+     <image class="nav-back-icon"
+            src="/assets/agent/icons/chevron-right-muted.png"/>
+   </button>
+
+   规范要点：
+   · 触控区：44×44px（88rpx）圆形，满足最小触控标准
+   · 图标：chevron-right-muted.png 旋转 180° 成左箭头，
+     40rpx 显示 + 暖金微光，与 agent-icons 线性描边同语言
+   · 底：夜色玻璃渐变 + 金线 hairline 描边 + 内高光 + 投影
+   · 按压：scale(.88) + 金边加深 + 轻微提亮，弹簧曲线回弹
+   · 定位：本文件不锚定位置——topbar 页见 app.wxss 的
+     .topbar .nav-back（left:8px, bottom:8px）；头图页/夜页
+     用页面自身规则 absolute 定位，统一左缘距屏幕 8px、
+     与标题行垂直居中
+   ============================================================ */
+
+.nav-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: max(88rpx, 44px);
+  min-width: max(88rpx, 44px);
+  max-width: max(88rpx, 44px);
+  height: max(88rpx, 44px);
+  border-radius: 50%;
+  background: linear-gradient(160deg, rgba(20, 44, 46, .78), rgba(8, 24, 26, .62));
+  border: 1rpx solid rgba(232, 200, 135, .22);
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, .22), inset 0 1rpx 0 rgba(255, 255, 255, .07);
+  transition: transform 260ms var(--ease-spring, cubic-bezier(.34, 1.2, .64, 1)), opacity .16s ease, background .2s ease, border-color .2s ease;
+}
+
+.nav-back-icon {
+  width: 40rpx;
+  height: 40rpx;
+  transform: rotate(180deg);
+  filter: drop-shadow(0 0 8rpx rgba(232, 200, 135, .18));
+}
+
+.nav-back.is-pressed {
+  transform: scale(.88);
+  opacity: .82;
+  background: linear-gradient(160deg, rgba(232, 200, 135, .16), rgba(8, 24, 26, .66));
+  border-color: rgba(232, 200, 135, .44);
+}

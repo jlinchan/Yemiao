@@ -6,15 +6,15 @@
         <view class="garden-fade"></view>
       </view>
       <view class="directory-heading" style="min-height: {{nav.navigationHeight}}px; padding-right: {{nav.rightInset}}px;">
-        <button class="directory-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed">
-          <image class="back-icon" src="{{assets.back}}" mode="aspectFit"></image>
+        <button class="directory-back nav-back" bindtap="goBack" aria-label="返回" hover-class="is-pressed">
+          <image class="nav-back-icon" src="{{assets.back}}" mode="aspectFit"></image>
         </button>
         <text class="directory-title">陪伴者</text>
       </view>
       <view class="directory-intro">
         <text class="directory-subtitle">总有一个陪伴方式，适合此刻的你</text>
       </view>
-      <view class="directory-categories" role="tablist" aria-label="咨询师分类">
+      <view class="directory-categories" role="tablist" aria-label="陪伴者分类">
         <button class="category-pill {{category === item.id ? 'is-selected' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="selectCategory" role="tab" aria-selected="{{category === item.id}}" hover-class="is-pressed">{{item.label}}</button>
       </view>
     </view>
@@ -33,7 +33,7 @@
             <view class="counselor-tags">
               <text class="counselor-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
             </view>
-            <button class="consult-button" data-id="{{item.id}}" bindtap="choose" aria-label="咨询{{item.name}}" hover-class="is-pressed">
+            <button class="consult-button" data-id="{{item.id}}" bindtap="choose" aria-label="开始对话：{{item.name}}" hover-class="is-pressed">
               <text>开始对话</text>
               <image class="consult-chevron" src="{{assets.chevron}}" mode="aspectFit"></image>
             </button>

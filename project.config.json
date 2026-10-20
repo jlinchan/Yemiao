@@ -1,0 +1,163 @@
+{
+  "description": "呼吸空间 - 轻量放松微信小程序",
+  "packOptions": {
+    "ignore": [
+      {
+        "value": "server",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck1",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck2",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck3",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck4",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck5",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck6",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck7",
+        "type": "folder"
+      },
+      {
+        "value": "ihcheck8",
+        "type": "folder"
+      },
+      {
+        "value": ".workbuddy",
+        "type": "folder"
+      },
+      {
+        "value": ".github",
+        "type": "folder"
+      },
+      {
+        "value": "assets/animation/sleepwell-starry-breath-4-7-8.gif",
+        "type": "file"
+      },
+      {
+        "value": ".git",
+        "type": "folder"
+      },
+      {
+        "value": ".worktrees",
+        "type": "folder"
+      },
+      {
+        "value": "Fig",
+        "type": "folder"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "tests",
+        "type": "folder"
+      },
+      {
+        "value": "tools",
+        "type": "folder"
+      },
+      {
+        "value": "README.md",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion-v2.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/body-silhouette.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion/checks",
+        "type": "folder"
+      },
+      {
+        "value": "assets/dandelion/build_layers.py",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion/photo-full.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion/photo-loosened.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion/photo-sparse.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/dandelion/photo-sparse-v2.png",
+        "type": "file"
+      },
+      {
+        "value": ".wav",
+        "type": "suffix"
+      }
+    ],
+    "include": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "useCompilerPlugins": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
+    "coverView": true,
+    "showShadowRootInWxmlPanel": true,
+    "compileWorklet": true,
+    "skylineRenderEnable": true,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.5.6",
+  "appid": "wx9fe54c8fa871a2de",
+  "projectname": "breathing-space",
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
+}

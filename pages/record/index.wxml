@@ -1,0 +1,53 @@
+<view class="record-page">
+  <view class="record-content" style="padding-top: {{nav.navigationBottom}}px;">
+    <view class="record-header">
+      <view class="header-copy">
+        <text class="record-title" role="heading" aria-level="1">我的会话记录</text>
+        <text class="record-subtitle">每一次对话，都是更靠近自己的一步</text>
+      </view>
+      <button class="search-button" bindtap="toggleSearch" aria-label="{{showSearch ? '关闭搜索' : '搜索会话'}}" aria-expanded="{{showSearch}}" hover-class="is-pressed">
+        <image src="{{showSearch ? '/assets/agent/icons/x-muted.png' : '/assets/record/search.png'}}" mode="aspectFit"/>
+      </button>
+    </view>
+    <view wx:if="{{showSearch}}" class="record-search">
+      <image class="search-field-icon" src="/assets/record/search.png" mode="aspectFit"/>
+      <input class="search-input" value="{{searchQuery}}" bindinput="onSearch" focus="{{inputFocus}}" placeholder="搜索会话" placeholder-class="search-placeholder" confirm-type="search" maxlength="100" aria-label="搜索会话内容"/>
+      <button wx:if="{{searchQuery}}" class="clear-search" bindtap="clearSearch" aria-label="清空搜索"><image src="/assets/agent/icons/x-muted.png" mode="aspectFit"/></button>
+    </view>
+    <view class="record-filters" role="tablist" aria-label="会话筛选">
+      <button id="filter-all" class="filter-button {{filter === 'all' ? 'is-selected' : ''}}" data-filter="all" bindtap="chooseFilter" role="tab" aria-selected="{{filter === 'all'}}" aria-controls="record-results" hover-class="is-pressed">全部 ({{counts.all}})</button>
+      <button id="filter-week" class="filter-button {{filter === 'week' ? 'is-selected' : ''}}" data-filter="week" bindtap="chooseFilter" role="tab" aria-selected="{{filter === 'week'}}" aria-controls="record-results" hover-class="is-pressed">本周 ({{counts.week}})</button>
+      <button id="filter-archived" class="filter-button {{filter === 'archived' ? 'is-selected' : ''}}" data-filter="archived" bindtap="chooseFilter" role="tab" aria-selected="{{filter === 'archived'}}" aria-controls="record-results" hover-class="is-pressed">已归档 ({{counts.archived}})</button>
+    </view>
+    <view id="record-results" class="record-results {{sessions.length ? 'has-list' : ''}}" role="tabpanel" aria-labelledby="filter-{{filter}}">
+      <scroll-view wx:if="{{sessions.length}}" class="session-scroll" scroll-y show-scrollbar="{{false}}">
+        <view class="session-list">
+          <view
+            wx:for="{{sessions}}"
+            wx:key="id"
+            class="session-item {{item.live ? 'is-live' : ''}}"
+            data-id="{{item.id}}"
+            bindtap="openSession"
+            hover-class="is-pressed"
+            aria-role="button"
+            aria-label="继续对话：{{item.title}}"
+          >
+            <view class="session-main">
+              <view class="session-title-row">
+                <text class="session-title">{{item.summary || item.title}}</text>
+                <text wx:if="{{item.live}}" class="session-live">进行中</text>
+              </view>
+              <text class="session-meta">{{item.when}} · {{item.count}} 条{{item.viewLabel}}</text>
+            </view>
+            <button class="session-del" data-id="{{item.id}}" catchtap="removeSession" hover-class="is-pressed" aria-label="删除对话{{item.title}}">删除</button>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:if="{{!sessions.length}}" class="record-empty" aria-live="polite">
+        <image class="empty-icon" src="/assets/record/conversation-empty.png" mode="aspectFit" aria-hidden="true"/>
+        <text class="empty-title">{{emptyTitle}}</text>
+      </view>
+    </view>
+  </view>
+  <night-tabbar active="records"></night-tabbar>
+</view>

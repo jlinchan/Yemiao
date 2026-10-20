@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "我的会话记录",
+  "backgroundColor": "#002823",
+  "disableScroll": true,
+  "usingComponents": {
+    "night-tabbar": "/components/night-tabbar/index"
+  }
+}

@@ -1,0 +1,162 @@
+const { DEFAULT_SETTINGS } = require('../utils/constants');
+
+const KEYS = {
+  settings: 'sleepwell.settings.v1',
+  sessions: 'sleepwell.sessions.v1',
+  journal: 'sleepwell.journal.v1',
+  sleep: 'sleepwell.sleep.v1',
+  agentMemory: 'sleepwell.agent-memory.v1',
+  agentFeedback: 'sleepwell.agent-feedback.v1',
+  agentTasks: 'sleepwell.agent-tasks.v1',
+  agentFacts: 'sleepwell.agent-facts.v1',
+  agentThoughts: 'sleepwell.agent-thoughts.v1',
+  agentMessages: 'sleepwell.agent-messages.v1',
+  agentReviews: 'sleepwell.agent-reviews.v1',
+  agentEvents: 'sleepwell.agent-events.v1',
+  agentChat: 'sleepwell.agent.chat.v1',
+  // 会话档案（2026-10-18）：归档会话列表 + 当前进行中的会话。
+  agentSessions: 'sleepwell.agent.sessions.v1',
+  agentActive: 'sleepwell.agent.active.v1',
+  guideSessions: 'sleepwell.guide-sessions.v1',
+  accessCode: 'sleepwell.access-code.v1',
+  // 夜喵对话偏好（人格/音色/记忆开关/求助地区等）。此前未注册，「清除数据」清不掉它（README 已知问题）。
+  nightPreferences: 'sleepwell.night.preferences.v1'
+};
+
+function read(key, fallback) {
+  try {
+    const value = wx.getStorageSync(key);
+    return value || fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function write(key, value) {
+  try {
+    wx.setStorageSync(key, value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function getSettings() {
+  const stored = read(KEYS.settings, {});
+  const next = Object.assign({}, DEFAULT_SETTINGS, stored);
+  // 技能权限逐项合并：老用户保存过的选择保留，新技能的出厂默认也能生效。
+  next.skillPermissions = Object.assign({}, DEFAULT_SETTINGS.skillPermissions, stored.skillPermissions || {});
+  if (stored.breathPatternVersion !== 2) {
+    if (!stored.rhythm || stored.rhythm === 'soothe') Object.assign(next, { rhythm: '478', inhaleSeconds: 4, holdSeconds: 7, exhaleSeconds: 8 });
+    next.breathPatternVersion = 2;
+    write(KEYS.settings, next);
+  }
+  return next;
+}
+
+function saveSettings(settings) {
+  const next = Object.assign({}, DEFAULT_SETTINGS, settings);
+  write(KEYS.settings, next);
+  const app = getApp();
+  if (app && app.globalData) app.globalData.settings = next;
+  return next;
+}
+
+function getSessions() {
+  return read(KEYS.sessions, []);
+}
+
+function saveSession(session) {
+  const sessions = getSessions();
+  sessions.unshift(session);
+  write(KEYS.sessions, sessions.slice(0, 100));
+}
+
+function upsertSession(session) {
+  const sessions = getSessions();
+  const index = sessions.findIndex((item) => item.id === session.id);
+  if (index >= 0) {
+    sessions[index] = Object.assign({}, sessions[index], session);
+  } else {
+    sessions.unshift(session);
+  }
+  write(KEYS.sessions, sessions.slice(0, 100));
+}
+
+function updateSessionOutcome(id, outcome) {
+  const allowed = ['relieved', 'same', 'tense'];
+  if (!id || (outcome !== null && allowed.indexOf(outcome) < 0)) return false;
+  const sessions = getSessions();
+  const index = sessions.findIndex((item) => item.id === id);
+  if (index < 0) return false;
+  sessions[index] = Object.assign({}, sessions[index], { outcome });
+  return write(KEYS.sessions, sessions.slice(0, 100));
+}
+
+function dateKey(timestamp) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function getSevenDaySummary(now, sessions) {
+  const end = new Date(now || Date.now());
+  const days = [];
+  const byDay = {};
+  (sessions || getSessions()).forEach((session) => {
+    const key = dateKey(session.startedAt || session.endedAt);
+    if (!key) return;
+    if (!byDay[key]) byDay[key] = { sessions: 0, completed: 0, cycles: 0, outcomes: { relieved: 0, same: 0, tense: 0 } };
+    byDay[key].sessions += 1;
+    byDay[key].cycles += Number(session.cycles) || 0;
+    if (session.completed) byDay[key].completed += 1;
+    if (byDay[key].outcomes[session.outcome] !== undefined) byDay[key].outcomes[session.outcome] += 1;
+  });
+  for (let index = 6; index >= 0; index -= 1) {
+    const date = new Date(end.getFullYear(), end.getMonth(), end.getDate() - index);
+    const key = dateKey(date.getTime());
+    days.push(Object.assign({ key, label: `${date.getMonth() + 1}/${date.getDate()}` }, byDay[key] || { sessions: 0, completed: 0, cycles: 0, outcomes: { relieved: 0, same: 0, tense: 0 } }));
+  }
+  return {
+    days,
+    activeDays: days.filter((day) => day.sessions > 0).length,
+    completedSessions: days.reduce((sum, day) => sum + day.completed, 0),
+    outcomes: days.reduce((sum, day) => ({ relieved: sum.relieved + day.outcomes.relieved, same: sum.same + day.outcomes.same, tense: sum.tense + day.outcomes.tense }), { relieved: 0, same: 0, tense: 0 })
+  };
+}
+
+function clearPersonalRecords() {
+  const results = [write(KEYS.sessions, []), write(KEYS.journal, []), write(KEYS.sleep, []), write(KEYS.agentMemory, []), write(KEYS.agentFeedback, []), write(KEYS.agentTasks, []), write(KEYS.agentFacts, []), write(KEYS.agentThoughts, []), write(KEYS.agentMessages, []), write(KEYS.agentReviews, []), write(KEYS.agentEvents, []), write(KEYS.guideSessions, []), write(KEYS.agentChat, ''), write(KEYS.agentSessions, []), write(KEYS.agentActive, '')];
+  // 夜喵偏好里的个人数据（心事清单/记忆开关/求助地区）一并清掉；
+  // 人格、音色、就寝时间等纯偏好保留。函数内 require 避免 storage <-> night-preferences 的加载环。
+  let preferencesOk = true;
+  try {
+    const nightPreferences = require('./night-preferences');
+    if (typeof nightPreferences.clearPersonalData === 'function') preferencesOk = nightPreferences.clearPersonalData() !== null;
+  } catch (error) { /* 偏好清理失败不阻塞其余记录清理 */ }
+  return results.every(Boolean) && preferencesOk;
+}
+
+function resetSettings() {
+  const next = Object.assign({}, DEFAULT_SETTINGS);
+  const saved = write(KEYS.settings, next);
+  const app = typeof getApp === 'function' ? getApp() : null;
+  if (app && app.globalData) app.globalData.settings = next;
+  return saved;
+}
+
+module.exports = {
+  KEYS,
+  read,
+  write,
+  getSettings,
+  saveSettings,
+  getSessions,
+  saveSession,
+  upsertSession,
+  updateSessionOutcome,
+  getSevenDaySummary,
+  clearPersonalRecords,
+  resetSettings,
+  dateKey
+};
