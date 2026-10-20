@@ -1,6 +1,6 @@
 require('./agent-test-config');
 // 测试隔离：屏蔽本机真实 difyKnowledge 配置，避免 chat 先打检索接口干扰 mock 流程。
-require('../services/secrets').difyKnowledge = undefined;
+require('../services/runtime-config').difyKnowledge = undefined;
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const voice = require('../utils/agent-voice');

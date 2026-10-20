@@ -6,12 +6,7 @@ const agentThoughts = require('./agent-thoughts');
 const agentReviews = require('./agent-reviews');
 const agentVector = require('./agent-vector');
 
-let secrets;
-try {
-  secrets = require('./secrets');
-} catch (error) {
-  secrets = require('./secrets.example.js');
-}
+const secrets = require('./runtime-config');
 
 // 容量（2026-10-16 三因子改造扩容）：上下文注入按打分选 top-K 而非全量，扩容不增加 token 预算。
 const MEMORY_LIMIT = 8;

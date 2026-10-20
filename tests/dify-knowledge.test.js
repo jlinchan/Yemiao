@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const difyKnowledge = require('../services/dify-knowledge');
 const agentClient = require('../services/agent-client');
-const secrets = require('../services/secrets');
+const secrets = require('../services/runtime-config');
 
 const CONFIG = { baseUrl: 'https://dify.test/v1', apiKey: 'dataset-test', datasetId: 'ds-1', topK: 3 };
 

@@ -3,12 +3,7 @@
 
 const storage = require('./storage');
 
-let secrets;
-try {
-  secrets = require('./secrets');
-} catch (error) {
-  secrets = require('./secrets.example.js');
-}
+const secrets = require('./runtime-config');
 
 // 约定的正确验证码来源：secrets.modelGateway.verificationCode。留空表示不设限。
 function required() {

@@ -14,12 +14,7 @@
 // 未配置（缺失/占位）时 enabled() 为 false，行为零变化；
 // 检索失败或超时静默降级为空块，绝不阻塞对话主链路。
 
-let secrets;
-try {
-  secrets = require('./secrets');
-} catch (error) {
-  secrets = require('./secrets.example.js');
-}
+const secrets = require('./runtime-config');
 
 const REQUEST_TIMEOUT_MS = 3000;
 const MAX_HITS = 3;

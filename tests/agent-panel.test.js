@@ -1,5 +1,5 @@
 // 测试隔离：屏蔽本机真实 difyKnowledge 配置（vm 的 require 委托回主 realm，此处置 undefined 即全局生效）。
-require('../services/secrets').difyKnowledge = undefined;
+require('../services/runtime-config').difyKnowledge = undefined;
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');

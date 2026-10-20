@@ -1,6 +1,6 @@
 require('./agent-test-config');
 // 测试隔离：屏蔽本机真实 difyKnowledge 配置，避免 chat 先打检索接口干扰 mock 流程。
-require('../services/secrets').difyKnowledge = undefined;
+require('../services/runtime-config').difyKnowledge = undefined;
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const agentClient = require('../services/agent-client');
@@ -359,7 +359,7 @@ test('mode=fast trims the protocol, mode=deep adds the professional directive, d
 });
 
 test('gatewayChannel picks the configured mode channel and falls back to the default', () => {
-  const secrets = require('../services/secrets');
+  const secrets = require('../services/runtime-config');
   const original = secrets.modelGateway;
   try {
     secrets.modelGateway = {

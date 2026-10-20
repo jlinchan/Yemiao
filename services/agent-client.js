@@ -1,12 +1,6 @@
 // 夜喵对话：默认调用服务端 OpenAI 兼容代理；失败显式报错，支持取消与重试。
 
-let secrets;
-try {
-  secrets = require('./secrets');
-} catch (error) {
-  // 缺少本地公开配置时读取示例；示例地址会触发明确的未配置提示。
-  secrets = require('./secrets.example.js');
-}
+const secrets = require('./runtime-config');
 
 const agentVoice = require('../utils/agent-voice');
 const agentKnowledge = require('../utils/agent-knowledge');
